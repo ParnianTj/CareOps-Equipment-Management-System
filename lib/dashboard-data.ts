@@ -6,6 +6,22 @@ export type Organization = {
   parentId: string | null
   createdAt?: string
   members?: number
+  accountOwners?: string
+  hasStore?: boolean
+  plan?: 'BASIC' | 'PREMIUM'
+  isActive?: boolean
+  isArchived?: boolean
+  street?: string
+  zip?: string
+  city?: string
+  country?: string
+  centralPhone?: string
+  centralFax?: string
+  taxNumber?: string
+  taxRate?: number
+  openingHours?: string
+  openingDays?: string[]
+  managementCountries?: string[]
 }
 
 export type Project = {

@@ -10,7 +10,6 @@ import { StatsCards } from './stats-cards'
 import { OrganizationActivity, type OrgActivity } from './organization-activity'
 import { LatestReports } from './latest-reports'
 import { RecentProjectsTable } from './recent-projects-table'
-import { OrganizationTree } from './organization-tree'
 import { ProjectLocationMap } from './project-location-map'
 import { organizations, stableDemoCount } from '@/lib/dashboard-data'
 
@@ -127,9 +126,6 @@ export function Dashboard({ language = 'de' }: DashboardProps) {
         <OrganizationActivity activity={activity} />
       </div>
 
-      <div id="organisationen" className="scroll-mt-24">
-        <OrganizationTree organizations={organizations} totalMembers={memberCount} />
-      </div>
     </div>
   )
 }
