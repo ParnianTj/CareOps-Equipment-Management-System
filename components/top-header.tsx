@@ -23,8 +23,8 @@ export function TopHeader({
   const sidebarToggleLabel = sidebarCollapsed ? (language === 'de' ? 'Seitenleiste erweitern' : 'Expand sidebar') : language === 'de' ? 'Seitenleiste reduzieren' : 'Collapse sidebar'
 
   return (
-    <header className="sticky top-0 z-20 flex h-[72px] items-center justify-between bg-background/90 px-4 backdrop-blur-xl sm:px-7 lg:px-10">
-      <div className="flex min-w-0 items-center gap-5">
+    <header className="sticky top-0 z-20 flex min-h-[72px] items-center justify-between gap-x-3 bg-background/90 px-4 py-2 backdrop-blur-xl sm:px-7 lg:px-10">
+      <div className="flex min-w-0 items-center gap-3 sm:gap-5">
         <button
           type="button"
           onClick={onOpenMobileSidebar}
@@ -42,7 +42,7 @@ export function TopHeader({
         >
           <PanelLeft className="size-[18px]" aria-hidden="true" />
         </button>
-        <p className="hidden text-sm font-medium text-muted-foreground sm:block">
+        <p className="hidden truncate text-sm font-medium text-muted-foreground sm:block">
           Z-part group <span className="mx-2 text-border">/</span> {navigationLabel}
         </p>
       </div>

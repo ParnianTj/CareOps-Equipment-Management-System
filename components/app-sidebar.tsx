@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { ChevronDown, FileText, FolderKanban, LayoutDashboard, List, UserRound, Building2, UsersRound } from 'lucide-react'
+import { ChevronDown, FileText, FolderKanban, LayoutDashboard, List, UserRound, Building2, UsersRound, Cog, Radio } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { Language } from '@/components/app-shell'
 import { useState } from 'react'
@@ -25,6 +25,9 @@ export function AppSidebar({ language, collapsed, mobileOpen, onClose, onExpandS
   const [organizationManagementExpanded, setOrganizationManagementExpanded] = useState(
     pathname.startsWith('/projekte/organisation-management'),
   )
+  const [machineManagementExpanded, setMachineManagementExpanded] = useState(
+    pathname.startsWith('/machine-management'),
+  )
   const pageLabel = language === 'de' ? 'Seiten' : 'Pages'
   const settingsLabel = language === 'de' ? 'Einstellungen' : 'Settings'
   const dashboardLabel = language === 'de' ? 'Übersicht' : 'Dashboard'
@@ -35,6 +38,9 @@ export function AppSidebar({ language, collapsed, mobileOpen, onClose, onExpandS
   const organizationManagementLabel = language === 'de' ? 'Organisationsverwaltung' : 'Organisation management'
   const organizationLabel = language === 'de' ? 'Organisation' : 'Organisation'
   const usersLabel = language === 'de' ? 'Benutzer' : 'Users'
+  const machineManagementLabel = 'Machine management'
+  const machinesLabel = 'Machines'
+  const protocolDevicesLabel = 'Protokoll/Aufnahmegeräte'
 
   function navigationLinkClass(active: boolean) {
     return cn(
@@ -204,6 +210,65 @@ export function AppSidebar({ language, collapsed, mobileOpen, onClose, onExpandS
                   >
                     <UsersRound className="size-4 shrink-0" aria-hidden="true" />
                     {usersLabel}
+                  </Link>
+                </li>
+              </ul>
+            )}
+          </li>
+          <li>
+            <button
+              type="button"
+              aria-expanded={machineManagementExpanded}
+              aria-controls="machine-management-subcategories"
+              className={cn(
+                navigationLinkClass(pathname.startsWith('/machine-management')),
+                'w-full',
+              )}
+              title={collapsed ? machineManagementLabel : undefined}
+              onClick={() => {
+                if (collapsed) onExpandSidebar()
+                setMachineManagementExpanded((expanded) => !expanded)
+              }}
+            >
+              <Cog className="size-[18px] shrink-0" aria-hidden="true" />
+              <span className={cn('flex-1 text-left', collapsed && 'lg:hidden')}>{machineManagementLabel}</span>
+              <ChevronDown
+                className={cn('size-4 shrink-0 transition-transform', machineManagementExpanded && 'rotate-180', collapsed && 'lg:hidden')}
+                aria-hidden="true"
+              />
+            </button>
+            {machineManagementExpanded && !collapsed && (
+              <ul id="machine-management-subcategories" className="mt-1 ml-4 flex flex-col gap-1 border-l border-sidebar-border pl-3">
+                <li>
+                  <Link
+                    href="/machine-management/machines"
+                    aria-current={pathname === '/machine-management/machines' ? 'page' : undefined}
+                    className={cn(
+                      'flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-xs font-medium transition-colors',
+                      pathname === '/machine-management/machines'
+                        ? 'bg-sidebar-accent text-white'
+                        : 'text-sidebar-foreground/65 hover:bg-sidebar-accent/70 hover:text-white',
+                    )}
+                    onClick={onClose}
+                  >
+                    <Cog className="size-4 shrink-0" aria-hidden="true" />
+                    {machinesLabel}
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/machine-management/protokoll-aufnahmegeraete"
+                    aria-current={pathname === '/machine-management/protokoll-aufnahmegeraete' ? 'page' : undefined}
+                    className={cn(
+                      'flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-xs font-medium transition-colors',
+                      pathname === '/machine-management/protokoll-aufnahmegeraete'
+                        ? 'bg-sidebar-accent text-white'
+                        : 'text-sidebar-foreground/65 hover:bg-sidebar-accent/70 hover:text-white',
+                    )}
+                    onClick={onClose}
+                  >
+                    <Radio className="size-4 shrink-0" aria-hidden="true" />
+                    {protocolDevicesLabel}
                   </Link>
                 </li>
               </ul>

@@ -34,7 +34,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     : children
 
   return (
-    <div className="min-h-screen bg-background lg:flex">
+    <div className="min-h-screen min-w-0 bg-background lg:flex">
       {mobileSidebarOpen && (
         <button
           type="button"
@@ -70,7 +70,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           onToggleSidebar={() => setSidebarCollapsed((current) => !current)}
           onOpenMobileSidebar={() => setMobileSidebarOpen(true)}
         />
-        <main className="flex-1 px-4 py-7 sm:px-7 sm:py-9 lg:px-10 lg:py-10">{content}</main>
+        <main className="min-w-0 flex-1 overflow-x-clip px-4 py-7 sm:px-7 sm:py-9 lg:px-10 lg:py-10">{content}</main>
       </div>
       <div
         aria-hidden="true"

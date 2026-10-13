@@ -65,10 +65,10 @@ const initialUsers: ManagedUser[] = [
   { id: 'user-2', name: 'Adrian Herman', email: 'adrian@ckrsolar.com', company: 'CKR Solar (Rental)', role: 'STORE CUSTOMER', expirationDate: '2025-02-05', active: false, archived: false },
   { id: 'user-3', name: 'Al Copping', email: 'sfd@revisionenergy.com', company: 'Revision Energy', role: 'ACCOUNT MANAGER', expirationDate: '', active: false, archived: false },
   { id: 'user-4', name: 'Alberto Guisado', email: 'alberto.guisado@apimet.com', company: 'Apimet Steel', role: 'ADMIN', expirationDate: '', active: false, archived: false },
-  { id: 'user-5', name: 'Alexander Birk', email: 'alexander@topnotchab.se', company: 'Skruvfundament Scandinavia AB', role: 'ADMIN', expirationDate: '', active: false, archived: false },
+  { id: 'user-5', name: 'Alexander Birk', email: 'alexander@topnotchab.se', company: 'Skruvfundament Scandinavia AB', role: 'ADMIN', expirationDate: '2026-11-21', active: false, archived: false },
   { id: 'user-6', name: 'Alexander Koch', email: 'Alexander.Koch@joulibra-storage.com', company: 'Joulibra Storage GmbH', role: 'ADMIN', expirationDate: '', active: false, archived: false },
   { id: 'user-7', name: 'Alexander Rupp', email: 'runtolev@profil-i.bg', company: 'PROFIL-I Ltd.', role: 'ACCOUNT MANAGER', expirationDate: '', active: false, archived: false },
-  { id: 'user-8', name: 'Alfons Hierl', email: 'a.hierl@krinner.com', company: 'KRINNER Schraubfundamente GmbH', role: 'ADMIN', expirationDate: '', active: false, archived: false },
+  { id: 'user-8', name: 'Alfons Hierl', email: 'a.hierl@krinner.com', company: 'KRINNER Schraubfundamente GmbH', role: 'ADMIN', expirationDate: '2027-04-15', active: false, archived: false },
 ]
 
 type UserDialog = 'create' | 'edit' | 'password' | null
@@ -106,8 +106,10 @@ export function UsersOverview() {
         )) {
           throw new Error('Saved user data has an invalid shape.')
         }
+        const seedExpirationDates = new Map(initialUsers.map((user) => [user.id, user.expirationDate]))
         setUsers((parsed as ManagedUser[]).map((user) => ({
           ...user,
+          ...(seedExpirationDates.has(user.id) ? { expirationDate: seedExpirationDates.get(user.id) ?? '' } : {}),
           role: user.role === 'Account Manager' ? 'ACCOUNT MANAGER'
             : user.role === 'Store Customer' ? 'STORE CUSTOMER'
               : user.role === 'Admin' ? 'ADMIN'
@@ -259,43 +261,43 @@ export function UsersOverview() {
             <h1 className="text-[15px] font-semibold tracking-tight">Benutzer</h1>
           </header>
 
-          <div className="flex flex-col gap-4 p-4 sm:p-5 lg:flex-row lg:flex-nowrap lg:items-center lg:gap-5">
-            <div className="flex shrink-0 flex-wrap items-center gap-4">
-              <button
-                type="button"
-                aria-expanded={filtersOpen}
-                onClick={() => setFiltersOpen((open) => !open)}
-                className="inline-flex items-center gap-2 text-sm font-medium text-foreground/90 hover:text-foreground"
-              >
-                <Filter className="size-4" aria-hidden="true" />
-                Filters
-              </button>
-              <button
-                type="button"
-                onClick={exportUsers}
-                className="inline-flex items-center gap-2 text-sm font-medium text-foreground/90 hover:text-foreground"
-              >
-                <Download className="size-4" aria-hidden="true" />
-                Export
-              </button>
-            </div>
-            <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center lg:flex-1 lg:justify-end">
-              <label className="relative block min-w-0 sm:min-w-[220px] lg:w-[min(28vw,325px)]">
-                <span className="sr-only">Benutzer suchen</span>
-                <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
-                <Input
-                  value={search}
-                  onChange={(event) => setSearch(event.target.value)}
-                  placeholder="Benutzer suchen"
-                  aria-label="Benutzer suchen"
-                  className="h-10 pl-9"
-                />
+          <div className="flex flex-col gap-4 p-4 sm:p-5 md:flex-row md:flex-nowrap md:items-center md:gap-2">
+            <label className="relative block min-w-0 md:w-auto md:flex-1">
+              <span className="sr-only">Benutzer suchen</span>
+              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+              <Input
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder="Benutzer suchen"
+                aria-label="Benutzer suchen"
+                className="h-10 pl-9"
+              />
+            </label>
+            <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end md:flex-nowrap">
+              <div className="flex shrink-0 flex-wrap items-center gap-2 md:flex-nowrap md:gap-2">
+                <button
+                  type="button"
+                  aria-expanded={filtersOpen}
+                  onClick={() => setFiltersOpen((open) => !open)}
+                  className="inline-flex items-center gap-1.5 whitespace-nowrap text-sm font-medium text-foreground/90 hover:text-foreground md:text-xs"
+                >
+                  <Filter className="size-4" aria-hidden="true" />
+                  Filters
+                </button>
+                <button
+                  type="button"
+                  onClick={exportUsers}
+                  className="inline-flex items-center gap-1.5 whitespace-nowrap text-sm font-medium text-foreground/90 hover:text-foreground md:text-xs"
+                >
+                  <Download className="size-4" aria-hidden="true" />
+                  Export
+                </button>
+              </div>
+              <label className="flex shrink-0 items-center gap-1.5 whitespace-nowrap text-sm text-foreground/80 md:text-xs">
+                <input type="checkbox" checked={showArchived} onChange={(event) => setShowArchived(event.target.checked)} className="size-4 shrink-0 rounded border-input" />
+                <span>Archivierte Benutzer anzeigen</span>
               </label>
-              <label className="flex shrink-0 items-center gap-2 text-sm text-foreground/80">
-                <input type="checkbox" checked={showArchived} onChange={(event) => setShowArchived(event.target.checked)} className="size-4 rounded border-input" />
-                Archivierte Benutzer anzeigen
-              </label>
-              <Button type="button" onClick={openCreate} className="h-10 shrink-0 gap-2 rounded-xl px-4 font-semibold shadow-sm">
+              <Button type="button" onClick={openCreate} className="h-10 shrink-0 gap-1.5 whitespace-nowrap rounded-xl px-3 font-semibold shadow-sm md:px-2 md:text-xs">
                 <Plus className="size-4" aria-hidden="true" />
                 Benutzer hinzufügen
               </Button>

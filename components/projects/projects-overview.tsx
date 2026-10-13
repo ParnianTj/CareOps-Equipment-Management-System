@@ -62,9 +62,9 @@ export function ProjectsOverview({ language = 'de' }: { language?: Language }) {
 
       <section
         aria-label={isEnglish ? 'Search and filter projects' : 'Projekte suchen und filtern'}
-        className="flex flex-col gap-3 rounded-2xl border border-border/80 bg-card p-4 sm:flex-row sm:items-center sm:p-5"
+        className="flex flex-col gap-3 rounded-2xl border border-border/80 bg-card p-4 sm:flex-row sm:flex-wrap sm:items-center sm:p-5"
       >
-        <div className="relative min-w-0 flex-1">
+        <div className="relative min-w-0 flex-1 sm:min-w-[220px]">
           <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
           <Input
             type="search"
@@ -82,7 +82,7 @@ export function ProjectsOverview({ language = 'de' }: { language?: Language }) {
           id="project-status-filter"
           value={statusFilter}
           onChange={(event) => setStatusFilter(event.target.value as ProjectStatus | '')}
-          className="h-10 rounded-lg border border-input bg-background px-3 text-sm focus-visible:border-ring focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+          className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm focus-visible:border-ring focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50 sm:min-w-[150px] sm:flex-1"
         >
           <option value="">{isEnglish ? 'All statuses' : 'Alle Status'}</option>
           {(Object.keys(statusLabels) as ProjectStatus[]).map((status) => (
@@ -100,7 +100,7 @@ export function ProjectsOverview({ language = 'de' }: { language?: Language }) {
           id="project-organization-filter"
           value={organizationFilter}
           onChange={(event) => setOrganizationFilter(event.target.value)}
-          className="h-10 rounded-lg border border-input bg-background px-3 text-sm focus-visible:border-ring focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+          className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm focus-visible:border-ring focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50 sm:min-w-[150px] sm:flex-1"
         >
           <option value="">{isEnglish ? 'All organizations' : 'Alle Organisationen'}</option>
           {organizations.map((organization) => (

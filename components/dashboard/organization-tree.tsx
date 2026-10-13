@@ -485,7 +485,7 @@ export function OrganizationTree({
   return (
     <Panel title="Organisationen" description="Organisationen, Zuständigkeiten und Mitglieder im Überblick">
       <div>
-        <div className="flex flex-col gap-4 p-4 sm:p-5 lg:flex-row lg:flex-nowrap lg:items-center lg:gap-5">
+        <div className="flex flex-col gap-4 p-4 sm:p-5 lg:flex-row lg:flex-wrap lg:items-center lg:gap-5">
           <div className="flex shrink-0 items-center gap-4">
             <button
               type="button"
@@ -507,8 +507,8 @@ export function OrganizationTree({
             </button>
           </div>
 
-          <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center lg:flex-1 lg:justify-end">
-            <label className="relative block min-w-0 sm:min-w-[220px] lg:w-[min(28vw,325px)]">
+          <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center lg:flex-1 lg:justify-end">
+            <label className="relative block min-w-0 sm:min-w-[220px] sm:flex-1 lg:w-[min(28vw,325px)] lg:flex-none">
               <span className="sr-only">Organisationen durchsuchen</span>
               <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
               <Input
@@ -524,9 +524,9 @@ export function OrganizationTree({
                 type="checkbox"
                 checked={showArchived}
                 onChange={(event) => setShowArchived(event.target.checked)}
-                className="h-4 w-4 rounded border-input bg-background"
+                className="h-4 w-4 shrink-0 rounded border-input bg-background"
               />
-              Archivierte Organisationen anzeigen
+              <span>Archivierte Organisationen anzeigen</span>
             </label>
             <Button
               type="button"

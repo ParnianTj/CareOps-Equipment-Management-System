@@ -506,7 +506,7 @@ export function DatasetsOverview() {
   const [serialFilter, setSerialFilter] = useState('')
   const [showFilters, setShowFilters] = useState(false)
   const [selected, setSelected] = useState<number[]>([])
-  const [expanded, setExpanded] = useState<string | null>('2023-04-12')
+  const [expanded, setExpanded] = useState<string | null>(null)
   const [page, setPage] = useState(0)
   const [groupPageSize, setGroupPageSize] = useState(pageSize)
   const [datasetPage, setDatasetPage] = useState<Record<string, number>>({})
