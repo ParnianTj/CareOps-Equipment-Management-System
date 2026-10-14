@@ -38,9 +38,9 @@ export function AppSidebar({ language, collapsed, mobileOpen, onClose, onExpandS
   const organizationManagementLabel = language === 'de' ? 'Organisationsverwaltung' : 'Organisation management'
   const organizationLabel = language === 'de' ? 'Organisation' : 'Organisation'
   const usersLabel = language === 'de' ? 'Benutzer' : 'Users'
-  const machineManagementLabel = 'Machine management'
-  const machinesLabel = 'Machines'
-  const protocolDevicesLabel = 'Protokoll/Aufnahmegeräte'
+  const machineManagementLabel = language === 'de' ? 'Maschinenverwaltung' : 'Machine management'
+  const machinesLabel = language === 'de' ? 'Maschinen' : 'Machines'
+  const protocolDevicesLabel = language === 'de' ? 'Protokoll/Aufnahmegeräte' : 'Protocol/Recording devices'
 
   function navigationLinkClass(active: boolean) {
     return cn(

@@ -12,6 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { useLanguage } from '@/components/app-shell'
 
 type ProtocolDevice = {
   number?: number
@@ -41,7 +42,18 @@ const initialDevices: ProtocolDevice[] = [
   { type: 'Smart-Cap', serialNumber: 'KRINNER KRE20-SC #82-42193', warrantyAllowed: 'No', pin: '1', assignedFirmware: 'KRE20_BLE_b1...', currentFirmware: 'N/A', company: 'z-part group', active: false },
 ]
 
+function localizedWarranty(value: string, isEnglish: boolean) {
+  if (value === 'No') return isEnglish ? 'No' : 'Nein'
+  if (value === 'Yes') return isEnglish ? 'Yes' : 'Ja'
+  return value
+}
+
+function localizedFirmware(value: string, isEnglish: boolean) {
+  return value === 'N/A' && !isEnglish ? 'k. A.' : value
+}
+
 export function ProtocolDevicesOverview() {
+  const { language } = useLanguage()
   const [devices, setDevices] = useState(initialDevices)
   const [filtersOpen, setFiltersOpen] = useState(false)
   const [filter, setFilter] = useState('')
@@ -49,7 +61,48 @@ export function ProtocolDevicesOverview() {
   const [serialNumber, setSerialNumber] = useState('')
   const [type, setType] = useState<ProtocolDevice['type']>('Doku-Kit')
   const [error, setError] = useState('')
-
+  const isEnglish = language === 'en'
+  const labels = isEnglish
+    ? {
+        filters: 'Filters',
+        export: 'Export',
+        createDevice: 'Create recording device',
+        search: 'Search recording devices',
+        type: 'Type',
+        serialNumber: 'Serial no.',
+        warrantyAllowed: 'Warranty allowed',
+        assignedFirmware: 'Assigned firmware',
+        currentFirmware: 'Current firmware',
+        company: 'Company name',
+        status: 'Status',
+        activate: 'Activate',
+        deactivate: 'Deactivate',
+        noDevicesFound: 'No recording devices found.',
+        serialRequired: 'Serial number is required.',
+        createDescription: 'Enter the type and serial number of the recording device.',
+        cancel: 'Cancel',
+        create: 'Create',
+      }
+    : {
+        filters: 'Filter',
+        export: 'Exportieren',
+        createDevice: 'Neues Aufnahmegerät erstellen',
+        search: 'Aufnahmegeräte suchen',
+        type: 'Typ',
+        serialNumber: 'Serien-Nr.',
+        warrantyAllowed: 'Garantie zulässig',
+        assignedFirmware: 'Zugewiesene Firmware',
+        currentFirmware: 'Aktuelle Firmware',
+        company: 'Firmenname',
+        status: 'Status',
+        activate: 'Aktivieren',
+        deactivate: 'Deaktivieren',
+        noDevicesFound: 'Keine Aufnahmegeräte gefunden.',
+        serialRequired: 'Die Seriennummer ist ein Pflichtfeld.',
+        createDescription: 'Erfassen Sie Typ und Seriennummer des Aufnahmegeräts.',
+        cancel: 'Abbrechen',
+        create: 'Erstellen',
+      }
   const visibleDevices = useMemo(() => {
     const query = filter.trim().toLocaleLowerCase()
     if (!query) return devices
@@ -57,26 +110,35 @@ export function ProtocolDevicesOverview() {
       [
         device.type,
         device.serialNumber,
-        device.warrantyAllowed,
+        localizedWarranty(device.warrantyAllowed, isEnglish),
         device.pin,
         device.assignedFirmware,
-        device.currentFirmware,
+        localizedFirmware(device.currentFirmware, isEnglish),
         device.company,
       ].some((value) => value.toLocaleLowerCase().includes(query)),
     )
-  }, [devices, filter])
+  }, [devices, filter, isEnglish])
 
   function exportDevices() {
-    const headers = ['Typ', 'Serien-Nr', 'Erlaube Garantie', 'PIN', 'Zugewiesene Firmware', 'Aktuelle Firmware', 'Firmenname', 'Status']
+    const headers = [
+      labels.type,
+      labels.serialNumber,
+      labels.warrantyAllowed,
+      'PIN',
+      labels.assignedFirmware,
+      labels.currentFirmware,
+      labels.company,
+      labels.status,
+    ]
     const rows = visibleDevices.map((device) => [
       device.type,
       device.serialNumber,
-      device.warrantyAllowed,
+      localizedWarranty(device.warrantyAllowed, isEnglish),
       device.pin,
       device.assignedFirmware,
-      device.currentFirmware,
+      localizedFirmware(device.currentFirmware, isEnglish),
       device.company,
-      device.active ? 'Aktiviert' : 'Aktivieren',
+      device.active ? (isEnglish ? 'Active' : 'Aktiv') : (isEnglish ? 'Inactive' : 'Inaktiv'),
     ])
     const csv = [headers, ...rows]
       .map((row) => row.map((value) => `"${value.replaceAll('"', '""')}"`).join(','))
@@ -84,7 +146,7 @@ export function ProtocolDevicesOverview() {
     const url = URL.createObjectURL(new Blob(['\uFEFF', csv], { type: 'text/csv;charset=utf-8' }))
     const link = document.createElement('a')
     link.href = url
-    link.download = 'protokoll-aufnahmegeraete.csv'
+    link.download = isEnglish ? 'protocol-recording-devices.csv' : 'protokoll-aufnahmegeraete.csv'
     document.body.appendChild(link)
     link.click()
     link.remove()
@@ -95,7 +157,7 @@ export function ProtocolDevicesOverview() {
     event.preventDefault()
     const trimmedSerialNumber = serialNumber.trim()
     if (!trimmedSerialNumber) {
-      setError('Serien-Nr ist ein Pflichtfeld.')
+      setError(labels.serialRequired)
       return
     }
     setDevices((current) => [...current, {
@@ -117,28 +179,33 @@ export function ProtocolDevicesOverview() {
   return (
     <div className="mx-auto flex max-w-[1500px] flex-col gap-5">
       <section className="overflow-hidden rounded-2xl border border-border/80 bg-card text-card-foreground shadow-[0_2px_12px_rgba(23,42,50,0.025)]">
-        <div className="flex flex-wrap items-center gap-5 px-5 py-4">
-          <button
-            type="button"
-            aria-expanded={filtersOpen}
-            onClick={() => setFiltersOpen((open) => !open)}
-            className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary/80"
-          >
-            <Filter className="size-4" aria-hidden="true" />
-            Filters
-          </button>
-          <button
-            type="button"
-            onClick={exportDevices}
-            className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary/80"
-          >
-            <Download className="size-4" aria-hidden="true" />
-            Export
-          </button>
-          <Button type="button" onClick={() => { setError(''); setCreateOpen(true) }} className="gap-2">
-            <Plus className="size-4" aria-hidden="true" />
-            Neues Aufnahmegerät erstellen
-          </Button>
+        <div className="flex flex-wrap items-center justify-between gap-4 px-5 py-4">
+          <h2 className="text-lg font-semibold">
+            {isEnglish ? 'Protocol/Recording Devices' : 'Protokoll/Aufnahmegeräte'}
+          </h2>
+          <div className="ml-auto flex flex-wrap items-center justify-end gap-5">
+            <button
+              type="button"
+              aria-expanded={filtersOpen}
+              onClick={() => setFiltersOpen((open) => !open)}
+              className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary/80"
+            >
+              <Filter className="size-4" aria-hidden="true" />
+              {labels.filters}
+            </button>
+            <button
+              type="button"
+              onClick={exportDevices}
+              className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary/80"
+            >
+              <Download className="size-4" aria-hidden="true" />
+              {labels.export}
+            </button>
+            <Button type="button" onClick={() => { setError(''); setCreateOpen(true) }} className="gap-2">
+              <Plus className="size-4" aria-hidden="true" />
+              {labels.createDevice}
+            </Button>
+          </div>
         </div>
 
         {filtersOpen && (
@@ -147,8 +214,8 @@ export function ProtocolDevicesOverview() {
               type="search"
               value={filter}
               onChange={(event) => setFilter(event.target.value)}
-              placeholder="Aufnahmegeräte suchen"
-              aria-label="Aufnahmegeräte suchen"
+              placeholder={labels.search}
+              aria-label={labels.search}
               className="max-w-md"
             />
           </div>
@@ -168,14 +235,14 @@ export function ProtocolDevicesOverview() {
             </colgroup>
             <thead>
               <tr className="border-y border-border bg-muted/60 text-left text-xs font-semibold text-foreground">
-                <th className="px-3 py-3">Typ</th>
-                <th className="px-3 py-3">Serien-Nr</th>
-                <th className="truncate px-3 py-3" title="Erlaube Garantie">Erlaube Garanti...</th>
+                <th className="px-3 py-3">{labels.type}</th>
+                <th className="px-3 py-3">{labels.serialNumber}</th>
+                <th className="truncate px-3 py-3" title={labels.warrantyAllowed}>{labels.warrantyAllowed}</th>
                 <th className="px-3 py-3">PIN</th>
-                <th className="truncate px-3 py-3" title="Zugewiesene Firmware">Zugewiesene Fi...</th>
-                <th className="truncate px-3 py-3" title="Aktuelle Firmware">Aktuelle Firmw...</th>
-                <th className="px-3 py-3">Firmenname</th>
-                <th className="px-3 py-3">Status</th>
+                <th className="truncate px-3 py-3" title={labels.assignedFirmware}>{labels.assignedFirmware}</th>
+                <th className="truncate px-3 py-3" title={labels.currentFirmware}>{labels.currentFirmware}</th>
+                <th className="px-3 py-3">{labels.company}</th>
+                <th className="px-3 py-3">{labels.status}</th>
               </tr>
             </thead>
             <tbody>
@@ -183,28 +250,28 @@ export function ProtocolDevicesOverview() {
                 <tr key={device.serialNumber} className={`border-b border-border last:border-0 hover:bg-muted/50 ${index % 2 ? 'bg-muted/20' : ''}`}>
                   <td className="truncate px-3 py-4" title={device.type}>{device.type}</td>
                   <td className="truncate px-3 py-4" title={device.serialNumber}>{device.serialNumber}</td>
-                  <td className="truncate px-3 py-4" title={device.warrantyAllowed}>{device.warrantyAllowed}</td>
+                  <td className="truncate px-3 py-4" title={localizedWarranty(device.warrantyAllowed, isEnglish)}>{localizedWarranty(device.warrantyAllowed, isEnglish)}</td>
                   <td className="px-3 py-4 tabular-nums">{device.pin}</td>
                   <td className="truncate px-3 py-4" title={device.assignedFirmware}>{device.assignedFirmware}</td>
-                  <td className="truncate px-3 py-4" title={device.currentFirmware}>{device.currentFirmware}</td>
+                  <td className="truncate px-3 py-4" title={localizedFirmware(device.currentFirmware, isEnglish)}>{localizedFirmware(device.currentFirmware, isEnglish)}</td>
                   <td className="truncate px-3 py-4" title={device.company}>{device.company}</td>
                   <td className="px-3 py-4">
                     <button
                       type="button"
-                      aria-label={`${device.serialNumber} ${device.active ? 'deaktivieren' : 'aktivieren'}`}
+                      aria-label={`${device.serialNumber} ${device.active ? labels.deactivate : labels.activate}`}
                       onClick={() => setDevices((current) => current.map((item) =>
                         item.serialNumber === device.serialNumber ? { ...item, active: !item.active } : item,
                       ))}
                       className="whitespace-nowrap text-sm text-muted-foreground hover:text-primary"
                     >
-                      {device.active ? 'Deaktivieren' : 'Aktivieren'}
+                      {device.active ? labels.deactivate : labels.activate}
                     </button>
                   </td>
                 </tr>
               ))}
               {visibleDevices.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="px-4 py-10 text-center text-sm text-muted-foreground">Keine Aufnahmegeräte gefunden.</td>
+                  <td colSpan={8} className="px-4 py-10 text-center text-sm text-muted-foreground">{labels.noDevicesFound}</td>
                 </tr>
               )}
             </tbody>
@@ -213,14 +280,14 @@ export function ProtocolDevicesOverview() {
       </section>
 
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-        <DialogContent>
+        <DialogContent closeLabel={isEnglish ? 'Close' : 'Schließen'}>
           <form onSubmit={createDevice} className="grid gap-5">
             <DialogHeader>
-              <DialogTitle>Neues Aufnahmegerät erstellen</DialogTitle>
-              <DialogDescription>Erfassen Sie Typ und Serien-Nr des Aufnahmegeräts.</DialogDescription>
+              <DialogTitle>{labels.createDevice}</DialogTitle>
+              <DialogDescription>{labels.createDescription}</DialogDescription>
             </DialogHeader>
             <label className="grid gap-2">
-              <span className="text-sm font-medium">Typ*</span>
+              <span className="text-sm font-medium">{labels.type}*</span>
               <select
                 value={type}
                 onChange={(event) => setType(event.target.value as ProtocolDevice['type'])}
@@ -231,13 +298,13 @@ export function ProtocolDevicesOverview() {
               </select>
             </label>
             <label className="grid gap-2">
-              <span className="text-sm font-medium">Serien-Nr*</span>
+              <span className="text-sm font-medium">{labels.serialNumber}*</span>
               <Input value={serialNumber} onChange={(event) => setSerialNumber(event.target.value)} required autoFocus />
             </label>
             {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setCreateOpen(false)}>Abbrechen</Button>
-              <Button type="submit">Erstellen</Button>
+              <Button type="button" variant="outline" onClick={() => setCreateOpen(false)}>{labels.cancel}</Button>
+              <Button type="submit">{labels.create}</Button>
             </DialogFooter>
           </form>
         </DialogContent>

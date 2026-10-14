@@ -38,7 +38,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {mobileSidebarOpen && (
         <button
           type="button"
-          aria-label="Close navigation"
+          aria-label={language === 'de' ? 'Navigation schließen' : 'Close navigation'}
           onClick={() => setMobileSidebarOpen(false)}
           className="fixed inset-0 z-[1000] bg-black/45 backdrop-blur-[2px] lg:hidden"
         />
