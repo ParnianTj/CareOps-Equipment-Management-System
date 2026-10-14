@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { AppShell } from '@/components/app-shell'
-import { MachineManagementPage } from '@/components/machine-management/machine-management-page'
+import { ProtocolDevicesOverview } from '@/components/machine-management/protocol-devices-overview'
 
 export const metadata: Metadata = {
   title: 'Protokoll/Aufnahmegeräte | Schlienz Connect',
@@ -10,11 +10,7 @@ export const metadata: Metadata = {
 export default function ProtocolDevicesPage() {
   return (
     <AppShell>
-      <MachineManagementPage
-        title="Protokoll/Aufnahmegeräte"
-        description="View and manage protocol and recording devices."
-        emptyMessage="No protocol or recording devices have been added yet."
-      />
+      <ProtocolDevicesOverview />
     </AppShell>
   )
 }

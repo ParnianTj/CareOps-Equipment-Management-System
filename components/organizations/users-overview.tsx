@@ -42,6 +42,7 @@ type ManagedUser = {
 }
 
 const storageKey = 'schlienz-managed-users'
+const screenshotUsersMigrationKey = 'schlienz-screenshot-users-seeded-v3'
 const filterOperators: { value: UserFilterOperator; label: string }[] = [
   { value: 'contains', label: 'contains' },
   { value: 'equals', label: 'equals' },
@@ -49,6 +50,12 @@ const filterOperators: { value: UserFilterOperator; label: string }[] = [
   { value: 'starts-with', label: 'starts with' },
   { value: 'ends-with', label: 'ends with' },
 ]
+
+const legacyRoleNames = new Map<string, UserRole>([
+  ['Account Manager', 'ACCOUNT MANAGER'],
+  ['Store Customer', 'STORE CUSTOMER'],
+  ['Admin', 'ADMIN'],
+])
 
 const filterColumns: { value: UserFilterColumn; label: string }[] = [
   { value: 'name', label: 'Name' },
@@ -60,16 +67,24 @@ const filterColumns: { value: UserFilterColumn; label: string }[] = [
   { value: 'action', label: 'Aktion' },
 ]
 
-const initialUsers: ManagedUser[] = [
-  { id: 'user-1', name: 'Aart Tulp', email: 'info@fundascrew.com', company: 'Fundascrew', role: 'ACCOUNT MANAGER', expirationDate: '', active: false, archived: false },
-  { id: 'user-2', name: 'Adrian Herman', email: 'adrian@ckrsolar.com', company: 'CKR Solar (Rental)', role: 'STORE CUSTOMER', expirationDate: '2025-02-05', active: false, archived: false },
-  { id: 'user-3', name: 'Al Copping', email: 'sfd@revisionenergy.com', company: 'Revision Energy', role: 'ACCOUNT MANAGER', expirationDate: '', active: false, archived: false },
-  { id: 'user-4', name: 'Alberto Guisado', email: 'alberto.guisado@apimet.com', company: 'Apimet Steel', role: 'ADMIN', expirationDate: '', active: false, archived: false },
-  { id: 'user-5', name: 'Alexander Birk', email: 'alexander@topnotchab.se', company: 'Skruvfundament Scandinavia AB', role: 'ADMIN', expirationDate: '2026-11-21', active: false, archived: false },
-  { id: 'user-6', name: 'Alexander Koch', email: 'Alexander.Koch@joulibra-storage.com', company: 'Joulibra Storage GmbH', role: 'ADMIN', expirationDate: '', active: false, archived: false },
-  { id: 'user-7', name: 'Alexander Rupp', email: 'runtolev@profil-i.bg', company: 'PROFIL-I Ltd.', role: 'ACCOUNT MANAGER', expirationDate: '', active: false, archived: false },
-  { id: 'user-8', name: 'Alfons Hierl', email: 'a.hierl@krinner.com', company: 'KRINNER Schraubfundamente GmbH', role: 'ADMIN', expirationDate: '2027-04-15', active: false, archived: false },
+const screenshotUsers: ManagedUser[] = [
+  { id: 'screenshot-user-1', name: 'Antoni Albrycht', email: 'antoni.albrycht@z-part.group', company: 'z-part group', role: 'OPERATOR', expirationDate: '', active: false, archived: false },
+  { id: 'screenshot-user-2', name: 'David Kaltenrieder', email: 'david.kaltenrieder@z-part.group', company: 'z-part group, Affolter Metall, Atel...', role: 'ACCOUNT MANAGER', expirationDate: '', active: false, archived: false },
+  { id: 'screenshot-user-3', name: 'Dominik Züger', email: 'dominik.zueger@z-part.group', company: 'z-part group, Roth Zaun AG, G.A...', role: 'ACCOUNT MANAGER', expirationDate: '', active: false, archived: false },
+  { id: 'screenshot-user-4', name: 'Faycal Djelal', email: 'faycal.djelal@z-part.group', company: 'z-part group', role: 'OPERATOR', expirationDate: '', active: false, archived: false },
+  { id: 'screenshot-user-5', name: 'Helmuth Grossmayer', email: '', company: 'z-part group, Easy-Fundament G...', role: 'ACCOUNT MANAGER', expirationDate: '', active: false, archived: false },
+  { id: 'screenshot-user-6', name: 'Ioan Bobes', email: 'ioan.bobes@z-part.group', company: 'z-part group', role: 'OPERATOR', expirationDate: '', active: false, archived: false },
+  { id: 'screenshot-user-7', name: 'Jakub Baran', email: 'jakub.baran@z-part.group', company: 'z-part group', role: 'OPERATOR', expirationDate: '', active: false, archived: false },
+  { id: 'screenshot-user-8', name: 'Jarek Kuzniar', email: 'jaroslaw.kuzniar@z-part.group', company: 'z-part group', role: 'OPERATOR', expirationDate: '', active: false, archived: false },
+  { id: 'screenshot-user-9', name: 'Jonathan Gros', email: 'jonathan.gros@z-part.group', company: 'z-part group', role: 'ADMIN', expirationDate: '', active: false, archived: false },
+  { id: 'screenshot-user-10', name: 'Kambium Montagen', email: 'info@kambium-montagen.ch', company: 'z-part group', role: 'OPERATOR', expirationDate: '', active: false, archived: false },
+  { id: 'screenshot-user-11', name: 'Kamil Szumski', email: 'kamil.szumski@z-part.group', company: 'z-part group', role: 'OPERATOR', expirationDate: '', active: false, archived: false },
+  { id: 'screenshot-user-12', name: 'Leandro Santos', email: 'leandro.santos@z-part.group', company: 'Jutech, z-part group', role: 'ACCOUNT MANAGER', expirationDate: '', active: false, archived: false },
+  { id: 'screenshot-user-13', name: 'Lukas Casar', email: 'lukas.casar@z-part.group', company: 'z-part group', role: 'ADMIN', expirationDate: '', active: false, archived: false },
 ]
+
+const initialUsers = screenshotUsers
+const previousSeedUserIds = new Set(Array.from({ length: 8 }, (_, index) => `user-${index + 1}`))
 
 type UserDialog = 'create' | 'edit' | 'password' | null
 
@@ -106,15 +121,25 @@ export function UsersOverview() {
         )) {
           throw new Error('Saved user data has an invalid shape.')
         }
-        const seedExpirationDates = new Map(initialUsers.map((user) => [user.id, user.expirationDate]))
-        setUsers((parsed as ManagedUser[]).map((user) => ({
-          ...user,
-          ...(seedExpirationDates.has(user.id) ? { expirationDate: seedExpirationDates.get(user.id) ?? '' } : {}),
-          role: user.role === 'Account Manager' ? 'ACCOUNT MANAGER'
-            : user.role === 'Store Customer' ? 'STORE CUSTOMER'
-              : user.role === 'Admin' ? 'ADMIN'
-                : user.role,
-        })))
+        const savedUsers = (parsed as ManagedUser[])
+          .filter((user) => !previousSeedUserIds.has(user.id))
+          .map((user) => ({
+            ...user,
+            role: legacyRoleNames.get(user.role) ?? user.role,
+          }))
+        if (window.localStorage.getItem(screenshotUsersMigrationKey) !== 'true') {
+          const userCreatedOutsideScreenshot = savedUsers.filter((user) => !user.id.startsWith('screenshot-user-'))
+          window.localStorage.setItem(screenshotUsersMigrationKey, 'true')
+          setUsers([...userCreatedOutsideScreenshot, ...screenshotUsers])
+        } else {
+          const savedUserIds = new Set(savedUsers.map((user) => user.id))
+          setUsers([
+            ...savedUsers,
+            ...screenshotUsers.filter((user) => !savedUserIds.has(user.id)),
+          ])
+        }
+      } else {
+        window.localStorage.setItem(screenshotUsersMigrationKey, 'true')
       }
     } catch (loadError) {
       console.error('Could not load saved users from local storage.', loadError)

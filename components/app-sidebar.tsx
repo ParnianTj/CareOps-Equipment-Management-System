@@ -159,65 +159,6 @@ export function AppSidebar({ language, collapsed, mobileOpen, onClose, onExpandS
           <li>
             <button
               type="button"
-              aria-expanded={organizationManagementExpanded}
-              aria-controls="organization-management-subcategories"
-              className={cn(
-                navigationLinkClass(pathname.startsWith('/projekte/organisation-management')),
-                'w-full',
-              )}
-              title={collapsed ? organizationManagementLabel : undefined}
-              onClick={() => {
-                if (collapsed) onExpandSidebar()
-                setOrganizationManagementExpanded((expanded) => !expanded)
-              }}
-            >
-              <Building2 className="size-[18px] shrink-0" aria-hidden="true" />
-              <span className={cn('flex-1 text-left', collapsed && 'lg:hidden')}>{organizationManagementLabel}</span>
-              <ChevronDown
-                className={cn('size-4 shrink-0 transition-transform', organizationManagementExpanded && 'rotate-180', collapsed && 'lg:hidden')}
-                aria-hidden="true"
-              />
-            </button>
-            {organizationManagementExpanded && !collapsed && (
-              <ul id="organization-management-subcategories" className="mt-1 ml-4 flex flex-col gap-1 border-l border-sidebar-border pl-3">
-                <li>
-                  <Link
-                    href="/projekte/organisation-management/organisation"
-                    aria-current={pathname === '/projekte/organisation-management/organisation' ? 'page' : undefined}
-                    className={cn(
-                      'flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-xs font-medium transition-colors',
-                      pathname === '/projekte/organisation-management/organisation'
-                        ? 'bg-sidebar-accent text-white'
-                        : 'text-sidebar-foreground/65 hover:bg-sidebar-accent/70 hover:text-white',
-                    )}
-                    onClick={onClose}
-                  >
-                    <Building2 className="size-4 shrink-0" aria-hidden="true" />
-                    {organizationLabel}
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/projekte/organisation-management/benutzer"
-                    aria-current={pathname === '/projekte/organisation-management/benutzer' ? 'page' : undefined}
-                    className={cn(
-                      'flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-xs font-medium transition-colors',
-                      pathname === '/projekte/organisation-management/benutzer'
-                        ? 'bg-sidebar-accent text-white'
-                        : 'text-sidebar-foreground/65 hover:bg-sidebar-accent/70 hover:text-white',
-                    )}
-                    onClick={onClose}
-                  >
-                    <UsersRound className="size-4 shrink-0" aria-hidden="true" />
-                    {usersLabel}
-                  </Link>
-                </li>
-              </ul>
-            )}
-          </li>
-          <li>
-            <button
-              type="button"
               aria-expanded={machineManagementExpanded}
               aria-controls="machine-management-subcategories"
               className={cn(
@@ -269,6 +210,65 @@ export function AppSidebar({ language, collapsed, mobileOpen, onClose, onExpandS
                   >
                     <Radio className="size-4 shrink-0" aria-hidden="true" />
                     {protocolDevicesLabel}
+                  </Link>
+                </li>
+              </ul>
+            )}
+          </li>
+          <li>
+            <button
+              type="button"
+              aria-expanded={organizationManagementExpanded}
+              aria-controls="organization-management-subcategories"
+              className={cn(
+                navigationLinkClass(pathname.startsWith('/projekte/organisation-management')),
+                'w-full',
+              )}
+              title={collapsed ? organizationManagementLabel : undefined}
+              onClick={() => {
+                if (collapsed) onExpandSidebar()
+                setOrganizationManagementExpanded((expanded) => !expanded)
+              }}
+            >
+              <Building2 className="size-[18px] shrink-0" aria-hidden="true" />
+              <span className={cn('flex-1 text-left', collapsed && 'lg:hidden')}>{organizationManagementLabel}</span>
+              <ChevronDown
+                className={cn('size-4 shrink-0 transition-transform', organizationManagementExpanded && 'rotate-180', collapsed && 'lg:hidden')}
+                aria-hidden="true"
+              />
+            </button>
+            {organizationManagementExpanded && !collapsed && (
+              <ul id="organization-management-subcategories" className="mt-1 ml-4 flex flex-col gap-1 border-l border-sidebar-border pl-3">
+                <li>
+                  <Link
+                    href="/projekte/organisation-management/organisation"
+                    aria-current={pathname === '/projekte/organisation-management/organisation' ? 'page' : undefined}
+                    className={cn(
+                      'flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-xs font-medium transition-colors',
+                      pathname === '/projekte/organisation-management/organisation'
+                        ? 'bg-sidebar-accent text-white'
+                        : 'text-sidebar-foreground/65 hover:bg-sidebar-accent/70 hover:text-white',
+                    )}
+                    onClick={onClose}
+                  >
+                    <Building2 className="size-4 shrink-0" aria-hidden="true" />
+                    {organizationLabel}
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/projekte/organisation-management/benutzer"
+                    aria-current={pathname === '/projekte/organisation-management/benutzer' ? 'page' : undefined}
+                    className={cn(
+                      'flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-xs font-medium transition-colors',
+                      pathname === '/projekte/organisation-management/benutzer'
+                        ? 'bg-sidebar-accent text-white'
+                        : 'text-sidebar-foreground/65 hover:bg-sidebar-accent/70 hover:text-white',
+                    )}
+                    onClick={onClose}
+                  >
+                    <UsersRound className="size-4 shrink-0" aria-hidden="true" />
+                    {usersLabel}
                   </Link>
                 </li>
               </ul>

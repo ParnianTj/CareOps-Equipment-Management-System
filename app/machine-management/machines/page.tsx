@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { AppShell } from '@/components/app-shell'
-import { MachineManagementPage } from '@/components/machine-management/machine-management-page'
+import { MachinesOverview } from '@/components/machine-management/machines-overview'
 
 export const metadata: Metadata = {
   title: 'Machines | Schlienz Connect',
@@ -10,11 +10,7 @@ export const metadata: Metadata = {
 export default function MachinesPage() {
   return (
     <AppShell>
-      <MachineManagementPage
-        title="Machines"
-        description="View and manage registered machines."
-        emptyMessage="No machines have been added yet."
-      />
+      <MachinesOverview />
     </AppShell>
   )
 }
