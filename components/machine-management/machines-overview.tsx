@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState, type FormEvent } from 'react'
-import { CheckCircle2, Download, Filter, Plus } from 'lucide-react'
+import { CheckCircle2, Download, Filter } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -193,10 +193,6 @@ export function MachinesOverview() {
               <Download className="size-4" aria-hidden="true" />
               {labels.export}
             </button>
-            <Button type="button" onClick={() => { setError(''); setCreateOpen(true) }} className="gap-2">
-              <Plus className="size-4" aria-hidden="true" />
-              {labels.createMachine}
-            </Button>
           </div>
         </div>
 

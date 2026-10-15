@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState, type FormEvent } from 'react'
-import { Download, Filter, Plus } from 'lucide-react'
+import { Download, Filter } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -201,10 +201,6 @@ export function ProtocolDevicesOverview() {
               <Download className="size-4" aria-hidden="true" />
               {labels.export}
             </button>
-            <Button type="button" onClick={() => { setError(''); setCreateOpen(true) }} className="gap-2">
-              <Plus className="size-4" aria-hidden="true" />
-              {labels.createDevice}
-            </Button>
           </div>
         </div>
 
