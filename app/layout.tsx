@@ -1,4 +1,3 @@
-import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import { LanguageProvider } from '@/components/app-shell'
@@ -57,7 +56,6 @@ export default function RootLayout({
             <DeploymentsProvider>{children}</DeploymentsProvider>
           </LanguageProvider>
         </ThemeProvider>
-        {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>
   )

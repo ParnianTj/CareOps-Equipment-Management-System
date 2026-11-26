@@ -11,9 +11,6 @@ importers:
       '@base-ui/react':
         specifier: ^1.5.0
         version: 1.5.0(@date-fns/tz@1.4.1)(@types/react@19.2.14)(date-fns@4.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      '@vercel/analytics':
-        specifier: 1.6.1
-        version: 1.6.1(next@16.3.3(@babel/core@7.29.7)(@types/node@26.6.10)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -1231,32 +1228,6 @@ packages:
     resolution: {integrity: sha512-DpLMlAqlrk4zBVK3DiDjwKD0oq7pZNy+8BiIBRuByqb6dm5jsdoLMhIiyh/xR7+WejaW/1Ui+XgbgMNa4+zWJg==}
     cpu: [x64]
     os: [win32]
-
-  '@vercel/analytics@1.6.1':
-    resolution: {integrity: sha512-oH9He/bEM+6oKlv3chWuOOcp8Y6fo6/PSro8hEkgCW3pu9/OiCXiUpRUogDh3Fs3LH2sosDrx8CxeOLBEE+afg==}
-    peerDependencies:
-      '@remix-run/react': ^2
-      '@sveltejs/kit': ^1 || ^2
-      next: '>= 13'
-      react: ^18 || ^19 || ^19.0.0-rc
-      svelte: '>= 4'
-      vue: ^3
-      vue-router: ^4
-    peerDependenciesMeta:
-      '@remix-run/react':
-        optional: true
-      '@sveltejs/kit':
-        optional: true
-      next:
-        optional: true
-      react:
-        optional: true
-      svelte:
-        optional: true
-      vue:
-        optional: true
-      vue-router:
-        optional: true
 
   '@vitest/expect@2.1.9':
     resolution: {integrity: sha512-UJCIkTBenHeKT1TTlKMJWy1laZewsRIzYighyYiJKZreqtdxSos/S1t+ktRMQWu2CKqaarrkeszJx1cgC5tGZw==}
@@ -4336,11 +4307,6 @@ snapshots:
 
   '@unrs/resolver-binding-win32-x64-msvc@1.13.0':
     optional: true
-
-  '@vercel/analytics@1.6.1(next@16.3.3(@babel/core@7.29.7)(@types/node@26.6.10)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)':
-    optionalDependencies:
-      next: 16.3.3(@babel/core@7.29.7)(@types/node@26.6.10)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      react: 19.2.4
 
   '@vitest/expect@2.1.9':
     dependencies:
