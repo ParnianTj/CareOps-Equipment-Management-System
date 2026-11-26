@@ -1,7 +1,12 @@
+name: careops
+
 services:
   web:
-    build: .
-    image: kc-development
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: careops-web:latest
+    container_name: careops-web
     ports:
       - "3000:3000"
     restart: unless-stopped

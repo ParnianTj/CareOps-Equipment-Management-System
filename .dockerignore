@@ -9,3 +9,6 @@ npm-debug.log*
 package-lock.json
 Dockerfile
 .dockerignore
+docker-compose.yml
+vitest.config.ts
+**/*.test.ts
