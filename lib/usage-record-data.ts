@@ -52,8 +52,6 @@ const deployments = [
   '1010901 Ultraschallgeräte Ambulanz',
 ] as const
 
-export const usageRecordGroups = groupSeeds.map(([date, count]) => ({ date, count }))
-
 export const sampleUsageRecords: UsageRecord[] = groupSeeds.flatMap(([date, count], groupIndex) =>
   Array.from({ length: count }, (_, rowIndex) => {
     const id = 199 + groupSeeds.slice(0, groupIndex).reduce((total, [, previousCount]) => total + previousCount, 0) + rowIndex

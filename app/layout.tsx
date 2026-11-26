@@ -12,7 +12,6 @@ export const metadata: Metadata = {
   title: 'Dashboard | CareOps',
   description:
     'Bereitstellungsübersicht, Einrichtungsaktivität und Verwaltung für CareOps Gruppe.',
-  generator: 'v0.app',
   icons: {
     icon: [
       {

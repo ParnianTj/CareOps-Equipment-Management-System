@@ -205,9 +205,6 @@ export function stableDemoCount(key: string, range: number, seed = 0) {
   return (hash >>> 0) % range + 1
 }
 
-export const REFERENCE_DATE = new Date('2026-10-03T12:00:00Z')
-export const ONE_MONTH_MS = 30 * 24 * 60 * 60 * 1000
-
 const affiliatedCareProviderNames = [
   'Praxis am Rosenpark',
   'Hausarztpraxis Lindenhof',
@@ -334,11 +331,6 @@ export const statusLabelsEn: Record<DeploymentStatus, string> = {
 
 export function getCareProviderName(careProviderId: string) {
   return careProviders.find((careProvider) => careProvider.id === careProviderId)?.name ?? 'Unknown'
-}
-
-export function isWithinLastMonth(iso: string) {
-  const time = new Date(iso).getTime()
-  return REFERENCE_DATE.getTime() - time <= ONE_MONTH_MS
 }
 
 export function formatDateTime(iso: string) {
