@@ -1,6 +1,6 @@
 'use client'
 
-import { cloneElement, createContext, isValidElement, useContext, useMemo, useState } from 'react'
+import { cloneElement, createContext, isValidElement, useCallback, useContext, useMemo, useState } from 'react'
 import { AppSidebar } from '@/components/app-sidebar'
 import { TopHeader } from '@/components/top-header'
 
@@ -15,6 +15,12 @@ export function useLanguage() {
   const context = useContext(LanguageContext)
   if (!context) throw new Error('useLanguage must be used within LanguageProvider')
   return context
+}
+
+/** Returns t(german, english), which picks the text for the current UI language. */
+export function useT() {
+  const { language } = useLanguage()
+  return useCallback((de: string, en: string) => (language === 'en' ? en : de), [language])
 }
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {

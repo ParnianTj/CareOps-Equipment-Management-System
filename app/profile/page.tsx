@@ -3,8 +3,8 @@ import { AppShell } from '@/components/app-shell'
 import { ProfileOverview } from '@/components/profile/profile-overview'
 
 export const metadata: Metadata = {
-  title: 'Profile | Schlienz Connect',
-  description: 'Account and organization details for Dominik Züger.',
+  title: 'Profil | CareOps',
+  description: 'Konto- und Einrichtungsdaten von Alex Berger.',
 }
 
 export default function ProfilePage() {

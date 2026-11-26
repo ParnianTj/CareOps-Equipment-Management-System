@@ -43,7 +43,7 @@ export function TopHeader({
           <PanelLeft className="size-[18px]" aria-hidden="true" />
         </button>
         <p className="hidden truncate text-sm font-medium text-muted-foreground sm:block">
-          Z-part group <span className="mx-2 text-border">/</span> {navigationLabel}
+          CareOps Gruppe <span className="mx-2 text-border">/</span> {navigationLabel}
         </p>
       </div>
 
@@ -76,10 +76,10 @@ export function TopHeader({
         <span className="hidden h-8 w-px bg-border sm:block" aria-hidden="true" />
         <div className="flex items-center gap-2.5">
           <span className="flex size-9 items-center justify-center rounded-full bg-secondary text-xs font-semibold text-secondary-foreground">
-            DZ
+            AB
           </span>
           <span className="hidden flex-col md:flex">
-            <span className="text-sm font-semibold leading-5">Dominik Züger</span>
+            <span className="text-sm font-semibold leading-5">Alex Berger</span>
             <span className="text-xs text-muted-foreground">Administrator</span>
           </span>
         </div>

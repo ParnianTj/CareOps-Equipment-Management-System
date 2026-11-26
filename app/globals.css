@@ -137,17 +137,17 @@
     display: none;
   }
 
-  .project-location-map .leaflet-container {
+  .deployment-location-map .leaflet-container {
     width: 100%;
     height: 100%;
   }
 
-  .project-location-map .project-location-marker {
+  .deployment-location-map .deployment-location-marker {
     border: 0;
     background: transparent;
   }
 
-  .project-location-pin {
+  .deployment-location-pin {
     display: block;
     width: 22px;
     height: 22px;
@@ -158,13 +158,13 @@
     transform: rotate(-45deg);
   }
 
-  .project-map-popup-link {
+  .deployment-map-popup-link {
     color: #17365d;
     font-weight: 600;
     text-decoration: none;
   }
 
-  .project-map-popup-link:hover {
+  .deployment-map-popup-link:hover {
     text-decoration: underline;
   }
   body {
@@ -172,130 +172,130 @@
   }
 }
 
-.datasets-theme {
-  --datasets-accent: var(--primary);
+.usage-records-theme {
+  --usage-records-accent: var(--primary);
   background-color: var(--background);
   color: var(--foreground);
 }
 
-.dark .datasets-theme {
-  --datasets-accent: var(--ring);
+.dark .usage-records-theme {
+  --usage-records-accent: var(--ring);
 }
 
-.datasets-theme[class*="bg-[#0e1625]"] {
+.usage-records-theme[class*="bg-[#0e1625]"] {
   background-color: var(--background) !important;
 }
 
-.datasets-theme [class*="bg-[#151f33]"],
-.datasets-theme [class*="bg-[#101827]"],
-.datasets-theme [class*="bg-[#1a2941]"] {
+.usage-records-theme [class*="bg-[#151f33]"],
+.usage-records-theme [class*="bg-[#101827]"],
+.usage-records-theme [class*="bg-[#1a2941]"] {
   background-color: var(--card) !important;
 }
 
-.datasets-theme [class*="bg-[#111a2b]"] {
+.usage-records-theme [class*="bg-[#111a2b]"] {
   background-color: var(--background) !important;
 }
 
-.datasets-theme [class*="bg-[#1b2740]"] {
+.usage-records-theme [class*="bg-[#1b2740]"] {
   background-color: var(--muted) !important;
 }
 
-.datasets-theme [class*="bg-[#293550]"]:hover,
-.datasets-theme [class*="bg-[#372c52]"]:hover,
-.datasets-theme [class*="hover:bg-[#ffffff08]"]:hover,
-.datasets-theme [class*="hover:bg-[#ffffff0a]"]:hover {
+.usage-records-theme [class*="bg-[#293550]"]:hover,
+.usage-records-theme [class*="bg-[#372c52]"]:hover,
+.usage-records-theme [class*="hover:bg-[#ffffff08]"]:hover,
+.usage-records-theme [class*="hover:bg-[#ffffff0a]"]:hover {
   background-color: var(--accent) !important;
 }
 
-.datasets-theme [class*="bg-[#2c2341]"] {
+.usage-records-theme [class*="bg-[#2c2341]"] {
   background-color: var(--secondary) !important;
 }
 
-.datasets-theme [class*="bg-[#754caa]"] {
+.usage-records-theme [class*="bg-[#754caa]"] {
   background-color: var(--primary) !important;
   color: var(--primary-foreground) !important;
 }
 
-.datasets-theme [class*="hover:bg-[#8960bf]"]:hover {
+.usage-records-theme [class*="hover:bg-[#8960bf]"]:hover {
   background-color: color-mix(in srgb, var(--primary) 90%, transparent) !important;
 }
 
-.datasets-theme [class*="border-[#293550]"],
-.datasets-theme [class*="border-[#35415a]"],
-.datasets-theme [class*="border-[#3a4661]"],
-.datasets-theme [class*="border-[#6b56a5]"],
-.datasets-theme [class*="border-[#53617c]"] {
+.usage-records-theme [class*="border-[#293550]"],
+.usage-records-theme [class*="border-[#35415a]"],
+.usage-records-theme [class*="border-[#3a4661]"],
+.usage-records-theme [class*="border-[#6b56a5]"],
+.usage-records-theme [class*="border-[#53617c]"] {
   border-color: var(--border) !important;
 }
 
-.datasets-theme [class*="border-[#b68aff]"] {
-  border-color: var(--datasets-accent) !important;
+.usage-records-theme [class*="border-[#b68aff]"] {
+  border-color: var(--usage-records-accent) !important;
 }
 
-.datasets-theme [class*="text-[#e7ebf3]"],
-.datasets-theme [class*="text-[#dce2ed]"] {
+.usage-records-theme [class*="text-[#e7ebf3]"],
+.usage-records-theme [class*="text-[#dce2ed]"] {
   color: var(--foreground) !important;
 }
 
-.datasets-theme [class*="text-[#b8c2d5]"],
-.datasets-theme [class*="text-[#aeb9cc]"],
-.datasets-theme [class*="text-[#9eabc1]"],
-.datasets-theme [class*="text-[#8f9bb1]"],
-.datasets-theme [class*="text-[#8893a8]"] {
+.usage-records-theme [class*="text-[#b8c2d5]"],
+.usage-records-theme [class*="text-[#aeb9cc]"],
+.usage-records-theme [class*="text-[#9eabc1]"],
+.usage-records-theme [class*="text-[#8f9bb1]"],
+.usage-records-theme [class*="text-[#8893a8]"] {
   color: var(--muted-foreground) !important;
 }
 
-.datasets-theme [class*="text-[#bd9cff]"],
-.datasets-theme [class*="text-[#d3b8ff]"] {
-  color: var(--datasets-accent) !important;
+.usage-records-theme [class*="text-[#bd9cff]"],
+.usage-records-theme [class*="text-[#d3b8ff]"] {
+  color: var(--usage-records-accent) !important;
 }
 
-.datasets-theme [class~="text-white"] {
+.usage-records-theme [class~="text-white"] {
   color: var(--foreground) !important;
 }
 
-.datasets-theme [class*="bg-[#754caa]"] [class~="text-white"],
-.datasets-theme [class*="bg-[#754caa]"].text-white {
+.usage-records-theme [class*="bg-[#754caa]"] [class~="text-white"],
+.usage-records-theme [class*="bg-[#754caa]"].text-white {
   color: var(--primary-foreground) !important;
 }
 
-.datasets-theme [class*="hover:text-white"]:hover {
+.usage-records-theme [class*="hover:text-white"]:hover {
   color: var(--foreground) !important;
 }
 
-.datasets-theme [class*="placeholder:text-[#8893a8]"]::placeholder {
+.usage-records-theme [class*="placeholder:text-[#8893a8]"]::placeholder {
   color: var(--muted-foreground) !important;
 }
 
-.datasets-theme [class*="focus-visible:border-[#aa7af6]"]:focus-visible {
+.usage-records-theme [class*="focus-visible:border-[#aa7af6]"]:focus-visible {
   border-color: var(--ring) !important;
 }
 
-.datasets-theme [class*="focus-visible:ring-[#aa7af6]"]:focus-visible,
-.datasets-theme [class*="focus-visible:ring-[#9b6bea]"]:focus-visible {
+.usage-records-theme [class*="focus-visible:ring-[#aa7af6]"]:focus-visible,
+.usage-records-theme [class*="focus-visible:ring-[#9b6bea]"]:focus-visible {
   --tw-ring-color: var(--ring) !important;
 }
 
-.datasets-theme [class*="focus-visible:outline-[#c8a8ff]"]:focus-visible {
+.usage-records-theme [class*="focus-visible:outline-[#c8a8ff]"]:focus-visible {
   outline-color: var(--ring) !important;
 }
 
-.datasets-theme [class*="accent-[#ae82f7]"] {
+.usage-records-theme [class*="accent-[#ae82f7]"] {
   accent-color: var(--primary) !important;
 }
 
-.datasets-theme [stroke="#53617c"] {
+.usage-records-theme [stroke="#53617c"] {
   stroke: var(--border);
 }
 
-.datasets-theme [stroke="#b68aff"] {
-  stroke: var(--datasets-accent);
+.usage-records-theme [stroke="#b68aff"] {
+  stroke: var(--usage-records-accent);
 }
 
-.datasets-theme [fill="#d3b8ff"] {
-  fill: var(--datasets-accent);
+.usage-records-theme [fill="#d3b8ff"] {
+  fill: var(--usage-records-accent);
 }
 
-.datasets-theme [fill="#aeb9cc"] {
+.usage-records-theme [fill="#aeb9cc"] {
   fill: var(--muted-foreground);
 }

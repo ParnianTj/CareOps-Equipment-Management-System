@@ -1,15 +1,15 @@
 import Link from 'next/link'
 import { Panel } from './panel'
-import { formatDateTime, getOrgName, type Project, type Report } from '@/lib/dashboard-data'
+import { formatDateTime, getCareProviderName, type Deployment, type Report } from '@/lib/dashboard-data'
 import type { Language } from '@/components/app-shell'
 
 export function LatestReports({
   reports,
-  projects,
+  deployments,
   language = 'de',
 }: {
   reports: Report[]
-  projects: Project[]
+  deployments: Deployment[]
   language?: Language
 }) {
   const isEnglish = language === 'en'
@@ -34,13 +34,13 @@ export function LatestReports({
     >
       <ol className="flex h-full flex-col justify-center gap-5 px-5 pb-5 sm:gap-6 sm:px-6">
         {latestReports.map((report, index) => {
-          const project = projects.find(
-            (item) => item.id === report.projectId || (item.name === report.projectName && item.orgId === report.orgId),
+          const deployment = deployments.find(
+            (item) => item.id === report.deploymentId || (item.name === report.deploymentName && item.careProviderId === report.careProviderId),
           )
-          const title = report.reportName ?? report.projectName
-          const projectName = project ? (
+          const title = report.reportName ?? report.deploymentName
+          const deploymentName = deployment ? (
             <Link
-              href={`/projekte/details/${encodeURIComponent(project.id)}`}
+              href={`/deployments/details/${encodeURIComponent(deployment.id)}`}
               className="block truncate font-medium text-foreground hover:text-primary"
             >
               {title}
@@ -55,8 +55,8 @@ export function LatestReports({
                 {index + 1}
               </span>
               <div className="min-w-0 flex-1">
-                {projectName}
-                <p className="truncate text-sm text-muted-foreground">{getOrgName(report.orgId)}</p>
+                {deploymentName}
+                <p className="truncate text-sm text-muted-foreground">{getCareProviderName(report.careProviderId)}</p>
               </div>
               <time
                 dateTime={report.createdAt}

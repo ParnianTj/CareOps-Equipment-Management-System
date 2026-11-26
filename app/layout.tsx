@@ -3,15 +3,15 @@ import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import { LanguageProvider } from '@/components/app-shell'
 import { ThemeProvider } from '@/components/theme-provider'
-import { ProjectsProvider } from '@/components/projects-provider'
+import { DeploymentsProvider } from '@/components/deployments-provider'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
 export const metadata: Metadata = {
-  title: 'Dashboard | Schlienz Connect',
+  title: 'Dashboard | CareOps',
   description:
-    'Projektübersicht, Organisationsaktivität und Verwaltung für Z-part group.',
+    'Bereitstellungsübersicht, Einrichtungsaktivität und Verwaltung für CareOps Gruppe.',
   generator: 'v0.app',
   icons: {
     icon: [
@@ -55,7 +55,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <LanguageProvider>
-            <ProjectsProvider>{children}</ProjectsProvider>
+            <DeploymentsProvider>{children}</DeploymentsProvider>
           </LanguageProvider>
         </ThemeProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}

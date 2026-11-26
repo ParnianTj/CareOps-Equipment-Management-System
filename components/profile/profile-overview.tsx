@@ -7,8 +7,8 @@ import { useLanguage } from '@/components/app-shell'
 
 const initialProfile = {
   email: '',
-  firstName: 'Dominik',
-  lastName: 'Züger',
+  firstName: 'Alex',
+  lastName: 'Berger',
   telephone: '',
   mobile: '',
   fax: '',

@@ -1,21 +1,25 @@
+'use client'
+
 import { Activity, Building2, FileCheck2, FolderKanban, type LucideIcon } from 'lucide-react'
+import { useT } from '@/components/app-shell'
 
 type Tone = 'navy' | 'gray' | 'red' | 'slate'
-type Stat = { label: string; value: number; hint: string; icon: LucideIcon; tone: Tone }
+type Stat = { key: string; label: string; value: number; hint: string; icon: LucideIcon; tone: Tone }
 
 type StatsCardsProps = {
-  projects: number
-  activeProjects: number
+  deployments: number
+  activeDeployments: number
   reports: number
   members: number
 }
 
-export function StatsCards({ projects, activeProjects, reports, members }: StatsCardsProps) {
+export function StatsCards({ deployments, activeDeployments, reports, members }: StatsCardsProps) {
+  const t = useT()
   const stats: Stat[] = [
-    { label: 'Projekte gesamt', value: projects, hint: 'In allen Bereichen', icon: FolderKanban, tone: 'navy' },
-    { label: 'In Bearbeitung', value: activeProjects, hint: 'Noch nicht abgeschlossen', icon: Activity, tone: 'gray' },
-    { label: 'Berichte', value: reports, hint: 'Erstellte Abschlussberichte', icon: FileCheck2, tone: 'red' },
-    { label: 'Mitglieder', value: members, hint: 'Über alle Organisationen', icon: Building2, tone: 'slate' },
+    { key: 'deployments', label: t('Bereitstellungen gesamt', 'Total deployments'), value: deployments, hint: t('In allen Bereichen', 'Across all areas'), icon: FolderKanban, tone: 'navy' },
+    { key: 'active', label: t('In Bearbeitung', 'In progress'), value: activeDeployments, hint: t('Noch nicht abgeschlossen', 'Not yet completed'), icon: Activity, tone: 'gray' },
+    { key: 'reports', label: t('Berichte', 'Reports'), value: reports, hint: t('Erstellte Abschlussberichte', 'Final reports created'), icon: FileCheck2, tone: 'red' },
+    { key: 'members', label: t('Mitglieder', 'Members'), value: members, hint: t('Über alle Einrichtungen', 'Across all care providers'), icon: Building2, tone: 'slate' },
   ]
 
   const tones = {
@@ -29,7 +33,7 @@ export function StatsCards({ projects, activeProjects, reports, members }: Stats
     <ul className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
       {stats.map((stat) => (
         <li
-          key={stat.label}
+          key={stat.key}
           className="rounded-2xl border border-border/80 bg-card p-4 shadow-[0_2px_12px_rgba(23,42,50,0.025)] sm:p-5"
         >
           <div className="flex items-start justify-between gap-2">

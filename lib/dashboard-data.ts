@@ -1,6 +1,6 @@
-export type ProjectStatus = 'created' | 'datasets' | 'report' | 'completed'
+export type DeploymentStatus = 'created' | 'usageRecords' | 'report' | 'completed'
 
-export type Organization = {
+export type CareProvider = {
   id: string
   name: string
   parentId: string | null
@@ -24,14 +24,14 @@ export type Organization = {
   managementCountries?: string[]
 }
 
-export type Project = {
+export type Deployment = {
   id: string
   name: string
-  orgId: string
+  careProviderId: string
   location: string
   createdAt: string
   createdBy: string
-  status: ProjectStatus
+  status: DeploymentStatus
   street?: string
   zip?: string
   country?: string
@@ -40,17 +40,17 @@ export type Project = {
   reference?: string
   startDate?: string
   endDate?: string
-  screwTypes?: ProjectScrew[]
-  positions?: ProjectPosition[]
+  deviceTypes?: DeviceType[]
+  lineItems?: EquipmentLineItem[]
 }
 
-export type ProjectScrew = {
+export type DeviceType = {
   id: string
   series: string
   name: string
 }
 
-export type ProjectPosition = {
+export type EquipmentLineItem = {
   id: string
   label: string
   quantity: number
@@ -67,214 +67,121 @@ export const countries = [
   'Tschechien',
 ]
 
-export const screwSeries = [
-  'E-Series',
-  'F-Series',
-  'G-Series',
-  'K-Series',
-  'M-Series',
-  'U-Series',
-  'V-Series',
-  'V-Series 5mm 114mm',
-  'V-Series 5mm 89 mm',
-  'V-Series 6,3mm 140mm',
-  'X-Series',
-  'S-Series',
-  'V-Series 6,3mm 168mm',
-  'Tools',
+/** English display names for the stored (German) country and weekday values. */
+export const countryLabelsEn: Record<string, string> = {
+  Deutschland: 'Germany',
+  Österreich: 'Austria',
+  Schweiz: 'Switzerland',
+  Italien: 'Italy',
+  Frankreich: 'France',
+  Niederlande: 'Netherlands',
+  Polen: 'Poland',
+  Tschechien: 'Czechia',
+}
+
+export const weekdayLabelsEn: Record<string, string> = {
+  Montag: 'Monday',
+  Dienstag: 'Tuesday',
+  Mittwoch: 'Wednesday',
+  Donnerstag: 'Thursday',
+  Freitag: 'Friday',
+  Samstag: 'Saturday',
+  Sonntag: 'Sunday',
+}
+
+export const deviceSeries = [
+  'Infusion Pumps',
+  'Syringe Pumps',
+  'Patient Monitors',
+  'Pulse Oximeters',
+  'ECG Devices',
+  'Defibrillators',
+  'Ventilators',
+  'Anesthesia Workstations',
+  'Ultrasound Systems',
+  'Dialysis Systems',
+  'Telemetry Units',
+  'Patient Beds',
+  'Imaging Accessories',
+  'Service Tools',
 ]
 
-const screwProductsBySeries: Record<(typeof screwSeries)[number], string[]> = {
-  'E-Series': [
-    'KSF E 140x1300-E76-100-K SMU-315',
-    'KSF E 140x3,6x1400-E76-100 SMU-044',
-    'KSF E 140x3,6x1600-E76-100',
-    'KSF E 140x3,6x1300-E76-100',
-    'KSF E 89x3,6x1000-E60',
-    'KSF E 89x3,6x800-E60',
-    'KSF E 89x3,6x550-E60',
+const deviceTypesBySeries: Record<(typeof deviceSeries)[number], string[]> = {
+  'Infusion Pumps': [
+    'CareOps InfuMed 300',
+    'CareOps InfuMed 300 Plus',
+    'CareOps InfuMed 500',
+    'CareOps InfuMed 500 Dual-Channel',
+    'CareOps InfuMed Mobile',
   ],
-  'F-Series': [
-    'KSF F 324x4300-SMU-693',
-    'KSF F 140x3,6x2100-M SMU-312',
-    'KSF F 406x5000 SMU-618',
-    'KSF F 406x5000 SMU-617',
-    'KSF F 406x6000 SMU-616',
-    'KSF F 406x6000 SMU-615',
-    'KSF F 140x3,6x1600-P',
-    'KSF F 140x3,6x1300-P',
-    'KSF F 76x3,6x1600-R',
-    'KSF F 76x2,6x1300-R',
-    'KSF F 76x2,6x1000-R',
-    'KSF F 76x2,6x800-R',
+  'Syringe Pumps': [
+    'CareOps SyriFlow 20',
+    'CareOps SyriFlow 50',
+    'CareOps SyriFlow 50 Neo',
   ],
-  'G-Series': [
-    'KSF G 89x3,5x2100 4xM12 SMU-721',
-    'KSF G 76x3,5x1300 4xM16',
-    'KSF G 89x3.5x2500-4xM12 SMU-941',
-    'KSF G 89x3,6x900 4xM12',
-    'KSF G 114x3,6x1300 4xM16',
-    'KSF G 89x2,6x1300 4xM12',
-    'KSF G 68x2,0x550-1xM8',
-    'KSF G 68x2,0x650-1xM8',
-    'KSF G 68x2,0x650 3xM8',
-    'KSF G 60x1,5x550-1xM6',
-    'KSF G 114x3,6x1000 4xM16',
-    'KSF G 76x2,6x800 4xM12',
-    'KSF G 89x2,6x1000 4xM12',
-    'KSF G 89x2,6x800 4xM12',
+  'Patient Monitors': [
+    'CareOps VitaScan 300',
+    'CareOps VitaScan 500',
+    'CareOps VitaScan 700 ICU',
+    'CareOps VitaScan Transport',
   ],
-  'K-Series': [
-    'KSF K 34x550',
-    'KSF K 42x650',
-    'KSF K 60x800',
+  'Pulse Oximeters': [
+    'CareOps OxiClip 10',
+    'CareOps OxiClip 20 Pediatric',
+    'CareOps OxiDesk 30',
   ],
-  'M-Series': [
-    'KSF M 114x3,6x2100 SMU-978',
-    'KSF M 140x3,6x2100 M24 SMU-409',
-    'KSF M 76x1300-M24 (SW245/F15)',
-    'KSF M 76x1600-M24 (SW245/F15)',
-    'KSF M 76x2100-M24 (SW245/F15)',
-    'KSF M 114x1300-M24 (SW245/F15)',
-    'KSF M 140x1600-M24 (SW245/F15)',
-    'KSF M 140x2100-M24 (SW245/F15)',
-    'KSF M 140x2600-M24 (SW245/F15)',
-    'KSF M 140x3000-M24 (SW245/F15)',
-    'KSF M 140x3500-M24 (SW245/F15)',
-    'KSF M 76x3,6x2100 M16 SMU-447',
-    'KSF M 114x3,6x2100 M24',
-    'KSF M 114x3,6x1600 M24',
-    'KSF M 89x3,6x2100 M24',
-    'KSF M 89x3,6x1600 M24',
-    'KSF M 89x3,6x1300 M24',
-    'KSF M 76x3,6x2100 M16',
-    'KSF M 76x3,6x1600 M16',
-    'KSF M 76x3,6x1300 M16',
-    'KSF M 76x2,6x1300 M12',
-    'KSF M 76x2,6x1000 M12',
-    'KSF M 76x2,6x800 M12',
-    'KSF M 60x3,6x1000 M12 SMU-398',
+  'ECG Devices': [
+    'CareOps CardioLink D12',
+    'CareOps CardioLink D30',
+    'CareOps CardioLink Holter 7',
   ],
-  'U-Series': [
-    'KSF U 60x2,0x865-111',
-    'KSF U 60x2,0x730-111',
-    'KSF U 60x2,0x550-71',
-    'KSF U 60x2,0x730-91',
-    'KSF U 60x2,0x730-71',
-    'KSF U 60x2,0x865-91',
+  Defibrillators: [
+    'CareOps PulseGuard AED',
+    'CareOps PulseGuard AED Pro',
+    'CareOps PulseGuard Monitor-Defi',
   ],
-  'V-Series': [
-    'KSF Vi 89x5,6x300 M24',
-    'KSF Vi 89x5,6x1000 E',
-    'KSF Vi 168x8,0x2000 E ROH',
-    'KSF Vi 168x8,0x2000 PT ROH',
-    'KSF Vi 89x5,6x2000 E',
-    'KSF Vi 89x5,6x2000 PT',
-    'KSF V 140x5.0-M24 (SW245/F15)',
-    'KSF V 76x3,6x1500EH',
-    'KSF V 76x3,6x2000 PT',
-    'KSF V 76x3,6x1500 PT',
-    'KSF V 76x3,6x1500 ET',
-    'KSF V 76x3,6x1500 E',
-    'KSF V 76x3,6x300 M16',
-    'KSF V 76x3,6x860 E',
-    'KSF V 76 screw set M16',
+  Ventilators: [
+    'CareOps AirFlow 400',
+    'CareOps AirFlow 600 ICU',
+    'CareOps AirFlow Transport',
   ],
-  'V-Series 5mm 114mm': [
-    'KSF V 114x5 M24 SMU905',
-    'KSF V 114x5x550 E SMU-441',
-    'KSF V 114x5,0x860 E 100µm',
-    'KSF V 114x5,0x1500 PT 100µm',
-    'KSF V 114x5,0x1500 EH 100µm',
-    'KSF V 114x5,0x1500 E 100µm',
-    'KSF V 114x5.0-M24 (SW245/F15)',
-    'KSF V 114x5,0x1500 E',
-    'KSF V 114x5,0x1500 PT',
-    'KSF V 114x5,0x2000 PT',
-    'KSF V 114x5,0x1500 EH',
-    'KSF V 114x5,0x1500 ET',
-    'KSF V 114x5,0x300 M24',
-    'KSF V 114x5,0x860 E',
-    'KSF V 114 screw set M24',
+  'Anesthesia Workstations': [
+    'CareOps AnaStation 200',
+    'CareOps AnaStation 400',
   ],
-  'V-Series 5mm 89 mm': [
-    'KSF V 89x5,0x1500 EH 100µm',
-    'KSF V 89x5,0x1500 ET 100µm',
-    'KSF V 89x5,0x1500 PT 100µm',
-    'KSF V 89x5,0x300 M24 100µm',
-    'KSF V 89x5,0x1500 E 100µm',
-    'KSF V 89x5,0x2000 PT 100µm',
-    'KSF Vi 89x5,0x2000 E',
-    'KSF Vi 89 screw set',
-    'KSF V 89x5,0x2000 PT',
-    'KSF V 89x5.0-M24 (SW245/F15)',
-    'KSF V 89x5 M24 SMU-374 (grüne Beschichtung-U-EBA-Kennzeichnung)',
-    'KSF V 89x5,0x1500 EH',
-    'KSF V 89x5,0x1500 PT',
-    'KSF V 89x5,0x1500 ET',
-    'KSF V 89x5,0x1500 E',
-    'KSF V 89x5,0x300 M24',
-    'KSF V 89x5,0x860 E',
-    'KSF V 89 screw set M24',
+  'Ultrasound Systems': [
+    'CareOps SonoView 5',
+    'CareOps SonoView 9 Cardio',
+    'CareOps SonoView Pocket',
   ],
-  'V-Series 6,3mm 140mm': [
-    'KSF V 140x6,3x860 E 100µm',
-    'KSF V 140x6,3x1500 ET 100µm',
-    'KSF V 140x6,3x1500 EH 100µm',
-    'KSF V 140x6,3x300 M24 100µm',
-    'KSF V 140x6,3x2000 PT 100µm',
-    'KSF V 140 screw set SB',
-    'KSF Vi 140 screw set',
-    'KSF V 140x6,3x1500 E',
-    'KSF Vi 140x6,3x2000 E ROH',
-    'KSF Vi 140x6,3x2000 PT ROH',
-    'KSF V 140x6,3x2000 PT',
-    'KSF V 140x6,3x1500 EH',
-    'KSF V 140x6,3x1500 ET',
-    'KSF V 140x6,3x300 M24',
-    'KSF V 140x6,3x860 E',
-    'KSF V 140 screw set M24',
+  'Dialysis Systems': [
+    'CareOps RenaFlow 4000',
+    'CareOps RenaFlow Home',
   ],
-  'X-Series': [
-    'KSF X 406x5500 SMU660',
-    'KSF X 406x5000 SMU697',
-    'KSF X 406x4500 SMU698',
-    'KSF X 406x4250 SMU692',
-    'KSF X 135x480 LPS',
-    'KSF X 13-34x370',
+  'Telemetry Units': [
+    'CareOps TeleTrack T1',
+    'CareOps TeleTrack T3',
+    'CareOps TeleTrack Gateway',
   ],
-  'S-Series': [
-    'KSF S 60x2800 CQ + smu-646',
+  'Patient Beds': [
+    'CareOps ComfortBed ICU',
+    'CareOps ComfortBed Standard',
   ],
-  'V-Series 6,3mm 168mm': [
-    'KSF V 168x6,3x1260 E+ TZN',
-    'KSF V 168 Vergussköcher+ TZN',
-    'KSF V 168x6,3x2000 ET+ TZN',
-    'KSF V 168x6,3x1500 EH+ TZN',
-    'KSF Vi 168 screw set',
-    'KSF V 168 screw set M24',
-    'KSF V 168x6,3x1500 ET+ TZN',
-    'KSF V 168x6,3x340 M30+ TZN',
-    'KSF V 168x6,3x860 E+ TZN',
-    'KSF V 168x6,3x2000 PT+ TZN',
-    'KSF V 168x6,3x2000 PT',
-    'KSF V 168x6,3x1500 E',
-    'KSF V 168x6,3x860 E',
-    'KSF V 168x6,3x1500 ET',
-    'KSF V 168x6,3x1500 EH',
-    'KSF V 168x6,3x340 M30',
+  'Imaging Accessories': [
+    'CareOps Lead Apron Set',
+    'CareOps Positioning Kit',
   ],
-  Tools: [
-    'Sondierdorn 1m D60',
-    'Sondierdorn 2m D60',
-    'Verdränger D324',
-    'Verdränger D355',
+  'Service Tools': [
+    'Kalibrierset Infusion',
+    'Prüfadapter EKG',
+    'Sicherheitstester SMT 1',
+    'Sicherheitstester SMT 2',
   ],
 }
 
-export const screwOptions: ProjectScrew[] = screwSeries.flatMap((series, seriesIndex) =>
-  screwProductsBySeries[series].map((name, productIndex) => ({
-    id: `screw-${seriesIndex + 1}-${productIndex + 1}`,
+export const deviceTypeOptions: DeviceType[] = deviceSeries.flatMap((series, seriesIndex) =>
+  deviceTypesBySeries[series].map((name, productIndex) => ({
+    id: `device-type-${seriesIndex + 1}-${productIndex + 1}`,
     series,
     name,
   })),
@@ -282,10 +189,10 @@ export const screwOptions: ProjectScrew[] = screwSeries.flatMap((series, seriesI
 
 export type Report = {
   id: string
-  projectName: string
-  orgId: string
+  deploymentName: string
+  careProviderId: string
   createdAt: string
-  projectId?: string
+  deploymentId?: string
   reportName?: string
   documentHtml?: string
 }
@@ -301,123 +208,132 @@ export function stableDemoCount(key: string, range: number, seed = 0) {
 export const REFERENCE_DATE = new Date('2026-10-03T12:00:00Z')
 export const ONE_MONTH_MS = 30 * 24 * 60 * 60 * 1000
 
-const dominikOrganizationNames = [
-  'Roth Zaun AG',
-  'G.A.O. Construction Bois Sàrl',
-  'Affolter Metall Kambium Montagen GmbH',
-  'ProBAS GmbH',
-  'Ihre Zaunwelt AG',
-  'Schmidlin Holzbau AG',
-  'Wahl Glas- und Metallbau AG',
-  'Trüb',
-  'Easy-Fundament GmbH',
-  'Mitterhuemer Energietechnik GmbH',
-  'Grabmale Wachter GmbH',
-  'Baumaschinen Schmitter GmbH',
-  'Manfred Schlienz GmbH',
-  'Glashaus Rehm GmbH',
-  'Raumausstattung Heiß',
-  'Formschön Clemens Buck GmbH',
-  'Fersch GmbH',
-  'E. SCHLEGEL GmbH Rolladen + Sonnenschutz',
-  'holzbau21 GmbH',
-  'GoldmannLindenberger GmbH + Co. KG',
-  'Schaffert Sonnenschutz',
-  'Pfeiffer Segel Service',
-  'BUCHBERGER Baugeräte Handel GmbH',
-  'Klaus Oßwald Drucklufttechnik',
-  'VIL Bausysteme GmbH',
-  'KONRAD KLEINER GmbH',
-  'Schraubfundamente Lindau',
-  'Holzbau Zimmerei Merz',
-  'Zimmerei Pfeffer GmbH',
-  'hochkant GmbH',
-  'Elser Holzbau',
-  'Theodor Wölpert GmbH & Co. KG',
-  'Diederichs Pflasterbau GmbH',
-  'Cambium GmbH',
-  'Atelier Leon.hms SOLONA Sonnenschutz',
-  'Florian Buchner',
-  'Jutech',
-  'Gmünder Gartenwelten GmbH',
-  'engintec GmbH',
+const affiliatedCareProviderNames = [
+  'Praxis am Rosenpark',
+  'Hausarztpraxis Lindenhof',
+  'Physiotherapie Seeblick',
+  'MVZ Am Stadtgarten',
+  'Zahnklinik Sonnenberg',
+  'Kinderarztpraxis Wolkenstein',
+  'Augenzentrum Talblick',
+  'Praxisgemeinschaft Mühlbach',
+  'Dialysezentrum Ostring',
+  'Reha-Klinik Waldesruh',
+  'Pflegeheim Abendrot',
+  'Orthopädie am Markt',
+  'CareOps Ambulanz Ost',
+  'Radiologie Glashaus',
+  'Hautarztpraxis Heidegrund',
+  'Kardiologie Formenhof',
+  'Praxis Feldrain',
+  'Geriatrie-Zentrum Schlehenweg',
+  'Gesundheitszentrum Holzmarkt',
+  'Ärztehaus Lindenberg',
+  'Pflegedienst Sonnenschein',
+  'Logopädie Segelhof',
+  'Sanitätshaus Buchberg',
+  'Atemtherapie Lufthof',
+  'Labor Nordstern',
+  'Klinik Kleinfeld',
+  'Rehazentrum Lindau',
+  'Hebammenpraxis Merzhof',
+  'Psychotherapie Pfefferhaus',
+  'Notfallpraxis Hochfeld',
+  'Tagesklinik Elsertal',
+  'Hospiz Abendstern',
+  'Diabetologie am Brunnen',
+  'Kurklinik Bergsee',
+  'Schmerzambulanz Sonnhalde',
+  'Praxis Birkenweg',
+  'Telemedizin Nordlicht',
+  'Klinik Gartenblick',
+  'Medizintechnik-Service Süd',
 ]
 
-export const organizations: Organization[] = [
-  { id: 'z-part-group', name: 'Z-part group', parentId: null, createdAt: '2023-01-12' },
-  { id: 'schlienz-group', name: 'Schlienz', parentId: null },
-  { id: 'schlienz', name: 'Schlienz GmbH', parentId: 'schlienz-group', createdAt: '2023-02-14', members: 42 },
-  { id: 'schlienz-zuerich', name: 'Schlienz Zürich', parentId: 'schlienz-group', createdAt: '2024-03-08', members: 18 },
-  { id: 'schlienz-basel', name: 'Schlienz Basel', parentId: 'schlienz-group', createdAt: '2024-04-22', members: 14 },
-  { id: 'schlienz-ost', name: 'Schlienz Ostschweiz', parentId: 'schlienz-group', createdAt: '2024-06-11', members: 21 },
-  { id: 'schlienz-bern', name: 'Schlienz Bern', parentId: 'schlienz-group', createdAt: '2025-01-17', members: 9 },
-  { id: 'schlienz-bau-montage', name: 'Schlienz Bau & Montage', parentId: 'schlienz-group', createdAt: '2025-02-03', members: 6 },
-  { id: 'schlienz-tiefbau', name: 'Schlienz Tiefbau', parentId: 'schlienz-group', createdAt: '2025-07-19', members: 4 },
-  { id: 'schlienz-st-gallen', name: 'Schlienz St. Gallen', parentId: 'schlienz-group', createdAt: '2025-03-28', members: 8 },
-  { id: 'schlienz-winterthur', name: 'Schlienz Winterthur', parentId: 'schlienz-group', createdAt: '2025-09-02', members: 5 },
-  { id: 'schlienz-luzern', name: 'Schlienz Luzern', parentId: 'schlienz-group', createdAt: '2026-02-10', members: 3 },
-  ...dominikOrganizationNames.map((name, index) => ({
-    id: `dominik-org-${index + 1}`,
+export const careProviders: CareProvider[] = [
+  { id: 'careops-group', name: 'CareOps Gruppe', parentId: null, createdAt: '2023-01-12' },
+  { id: 'careops-clinics', name: 'CareOps Kliniken', parentId: null },
+  { id: 'careops-clinic-central', name: 'CareOps Klinikum', parentId: 'careops-clinics', createdAt: '2023-02-14', members: 42 },
+  { id: 'careops-zuerich', name: 'CareOps Klinik Zürich', parentId: 'careops-clinics', createdAt: '2024-03-08', members: 18 },
+  { id: 'careops-basel', name: 'CareOps Klinik Basel', parentId: 'careops-clinics', createdAt: '2024-04-22', members: 14 },
+  { id: 'careops-ost', name: 'CareOps Klinik Ostschweiz', parentId: 'careops-clinics', createdAt: '2024-06-11', members: 21 },
+  { id: 'careops-bern', name: 'CareOps Klinik Bern', parentId: 'careops-clinics', createdAt: '2025-01-17', members: 9 },
+  { id: 'careops-medtech-service', name: 'CareOps Medizintechnik-Service', parentId: 'careops-clinics', createdAt: '2025-02-03', members: 6 },
+  { id: 'careops-rehab', name: 'CareOps Reha-Zentrum', parentId: 'careops-clinics', createdAt: '2025-07-19', members: 4 },
+  { id: 'careops-st-gallen', name: 'CareOps Klinik St. Gallen', parentId: 'careops-clinics', createdAt: '2025-03-28', members: 8 },
+  { id: 'careops-winterthur', name: 'CareOps Klinik Winterthur', parentId: 'careops-clinics', createdAt: '2025-09-02', members: 5 },
+  { id: 'careops-luzern', name: 'CareOps Klinik Luzern', parentId: 'careops-clinics', createdAt: '2026-02-10', members: 3 },
+  ...affiliatedCareProviderNames.map((name, index) => ({
+    id: `affiliated-care-provider-${index + 1}`,
     name,
-    parentId: name === 'Manfred Schlienz GmbH' ? 'schlienz-group' : null,
-    ...(name === 'Manfred Schlienz GmbH' ? {} : { members: stableDemoCount(name, 5) }),
+    parentId: name === 'CareOps Ambulanz Ost' ? 'careops-clinics' : null,
+    ...(name === 'CareOps Ambulanz Ost' ? {} : { members: stableDemoCount(name, 5) }),
   })),
 ]
 
-export const initialProjects: Project[] = [
-  { id: 'p1', name: 'Testung Kirche Knooper Weg', orgId: 'schlienz-basel', location: 'Kiel', latitude: 54.3233, longitude: 10.1228, createdAt: '2026-10-01T06:04', createdBy: 'M. Hansen', status: 'report' },
-  { id: 'p2', name: 'DE-26 Hörnerbahn Raupenabspannung', orgId: 'schlienz-zuerich', location: 'Bolsterlang', latitude: 47.4622, longitude: 10.2340, createdAt: '2026-09-30T14:22', createdBy: 'D. Züger', status: 'datasets' },
-  { id: 'p3', name: 'Solarpark Wels Ost', orgId: 'schlienz-ost', location: 'Wels', latitude: 48.1575, longitude: 14.0288, createdAt: '2026-09-28T09:15', createdBy: 'J. Gruber', status: 'created' },
-  { id: 'p4', name: '10342 Winden', orgId: 'schlienz', location: 'Straßkirchen', latitude: 48.8330, longitude: 12.7200, createdAt: '2026-09-25T01:02', createdBy: 'D. Züger', status: 'datasets' },
-  { id: 'p5', name: 'Carport Anlage Zürich-Nord', orgId: 'schlienz-luzern', location: 'Zürich', latitude: 47.3769, longitude: 8.5417, createdAt: '2026-09-23T11:40', createdBy: 'S. Meier', status: 'created' },
-  { id: 'p6', name: '1010901 Lärmschutzwand A8', orgId: 'schlienz-bau-montage', location: 'Rosenheim', latitude: 47.8564, longitude: 12.1282, createdAt: '2026-09-20T02:01', createdBy: 'T. Huber', status: 'report' },
-  { id: 'p7', name: 'Messestand Wien Prater', orgId: 'schlienz-st-gallen', location: 'Wien', latitude: 48.2082, longitude: 16.3738, createdAt: '2026-09-17T16:30', createdBy: 'A. Novak', status: 'datasets' },
-  { id: 'p8', name: '1310007 Zaunanlage Hafen', orgId: 'schlienz-basel', location: 'Hamburg', latitude: 53.5511, longitude: 9.9937, createdAt: '2026-09-14T03:04', createdBy: 'M. Hansen', status: 'report' },
-  { id: 'p9', name: 'PV Freifläche Kempten', orgId: 'schlienz-tiefbau', location: 'Kempten', latitude: 47.7267, longitude: 10.3139, createdAt: '2026-09-11T08:50', createdBy: 'F. Wagner', status: 'created' },
-  { id: 'p10', name: '1310029 Beschilderung B15', orgId: 'schlienz-zuerich', location: 'Landshut', latitude: 48.5442, longitude: 12.1469, createdAt: '2026-09-08T03:04', createdBy: 'D. Züger', status: 'report' },
-  { id: 'p11', name: 'Terrassenbau Graz Andritz', orgId: 'schlienz-winterthur', location: 'Graz', latitude: 47.0707, longitude: 15.4395, createdAt: '2026-09-06T10:12', createdBy: 'P. Steiner', status: 'created' },
-  { id: 'p12', name: 'BA Living Circles', orgId: 'schlienz', location: 'Regensburg', latitude: 49.0134, longitude: 12.1016, createdAt: '2026-09-04T11:05', createdBy: 'K. Weber', status: 'datasets' },
-].map((project) => {
-  const positionCount = 3 + stableDemoCount(`${project.id}-positions`, 3)
-  const positions = Array.from({ length: positionCount }, (_, index) => ({
-    id: `${project.id}-position-${index + 1}`,
+const deploymentSeeds: Deployment[] = [
+  { id: 'p1', name: 'Infusionspumpen-Rollout Station 4B', careProviderId: 'careops-basel', location: 'Kiel', latitude: 54.3233, longitude: 10.1228, createdAt: '2026-10-01T06:04', createdBy: 'M. Hansen', status: 'report' },
+  { id: 'p2', name: 'Patientenmonitore Intensivstation', careProviderId: 'careops-zuerich', location: 'Bolsterlang', latitude: 47.4622, longitude: 10.2340, createdAt: '2026-09-30T14:22', createdBy: 'A. Berger', status: 'usageRecords' },
+  { id: 'p3', name: 'Beatmungsgeräte Notaufnahme', careProviderId: 'careops-ost', location: 'Wels', latitude: 48.1575, longitude: 14.0288, createdAt: '2026-09-28T09:15', createdBy: 'J. Gruber', status: 'created' },
+  { id: 'p4', name: '10342 Defibrillatoren Hauptgebäude', careProviderId: 'careops-clinic-central', location: 'Straßkirchen', latitude: 48.8330, longitude: 12.7200, createdAt: '2026-09-25T01:02', createdBy: 'A. Berger', status: 'usageRecords' },
+  { id: 'p5', name: 'Telemetrie-Ausbau Kardiologie', careProviderId: 'careops-luzern', location: 'Zürich', latitude: 47.3769, longitude: 8.5417, createdAt: '2026-09-23T11:40', createdBy: 'S. Meier', status: 'created' },
+  { id: 'p6', name: '1010901 Ultraschallgeräte Ambulanz', careProviderId: 'careops-medtech-service', location: 'Rosenheim', latitude: 47.8564, longitude: 12.1282, createdAt: '2026-09-20T02:01', createdBy: 'T. Huber', status: 'report' },
+  { id: 'p7', name: 'Mobile EKG-Wagen Geriatrie', careProviderId: 'careops-st-gallen', location: 'Wien', latitude: 48.2082, longitude: 16.3738, createdAt: '2026-09-17T16:30', createdBy: 'A. Novak', status: 'usageRecords' },
+  { id: 'p8', name: '1310007 Spritzenpumpen Pädiatrie', careProviderId: 'careops-basel', location: 'Hamburg', latitude: 53.5511, longitude: 9.9937, createdAt: '2026-09-14T03:04', createdBy: 'M. Hansen', status: 'report' },
+  { id: 'p9', name: 'Vitaldatenmonitore Reha-Zentrum', careProviderId: 'careops-rehab', location: 'Kempten', latitude: 47.7267, longitude: 10.3139, createdAt: '2026-09-11T08:50', createdBy: 'F. Wagner', status: 'created' },
+  { id: 'p10', name: '1310029 Pulsoximeter Stationen', careProviderId: 'careops-zuerich', location: 'Landshut', latitude: 48.5442, longitude: 12.1469, createdAt: '2026-09-08T03:04', createdBy: 'A. Berger', status: 'report' },
+  { id: 'p11', name: 'Dialysegeräte Nephrologie', careProviderId: 'careops-winterthur', location: 'Graz', latitude: 47.0707, longitude: 15.4395, createdAt: '2026-09-06T10:12', createdBy: 'P. Steiner', status: 'created' },
+  { id: 'p12', name: 'OP-Bildgebung Zentral-OP', careProviderId: 'careops-clinic-central', location: 'Regensburg', latitude: 49.0134, longitude: 12.1016, createdAt: '2026-09-04T11:05', createdBy: 'K. Weber', status: 'usageRecords' },
+]
+
+export const initialDeployments: Deployment[] = deploymentSeeds.map((deployment) => {
+  const lineItemCount = 3 + stableDemoCount(`${deployment.id}-line-items`, 3)
+  const lineItems = Array.from({ length: lineItemCount }, (_, index) => ({
+    id: `${deployment.id}-line-item-${index + 1}`,
     label: `Position ${String(index + 1).padStart(2, '0')}`,
-    quantity: 2 + stableDemoCount(`${project.id}-quantity-${index}`, 8),
+    quantity: 2 + stableDemoCount(`${deployment.id}-quantity-${index}`, 8),
   }))
-  const screwTypes = Array.from({ length: 2 }, (_, index) => {
-    const option = screwOptions[stableDemoCount(`${project.id}-screw-${index}`, screwOptions.length) - 1]
-    return { ...option, id: `${project.id}-${option.id}` }
+  const deviceTypes = Array.from({ length: 2 }, (_, index) => {
+    const option = deviceTypeOptions[stableDemoCount(`${deployment.id}-device-type-${index}`, deviceTypeOptions.length) - 1]
+    return { ...option, id: `${deployment.id}-${option.id}` }
   })
 
   return {
-    ...project,
-    positions: project.positions?.length ? project.positions : positions,
-    screwTypes: project.screwTypes?.length ? project.screwTypes : screwTypes,
+    ...deployment,
+    lineItems: deployment.lineItems?.length ? deployment.lineItems : lineItems,
+    deviceTypes: deployment.deviceTypes?.length ? deployment.deviceTypes : deviceTypes,
   }
 })
 
 export const reports: Report[] = [
-  { id: 'r1', projectName: 'Testung Kirche Knooper Weg', orgId: 'schlienz-basel', createdAt: '2026-10-01T06:04' },
-  { id: 'r2', projectName: 'DE-26 Hörnerbahn Raupenabspannung', orgId: 'schlienz-zuerich', createdAt: '2026-10-01T02:04' },
-  { id: 'r3', projectName: '1010901 Lärmschutzwand A8', orgId: 'schlienz-bau-montage', createdAt: '2026-09-27T13:10' },
-  { id: 'r4', projectName: '1310007 Zaunanlage Hafen', orgId: 'schlienz-basel', createdAt: '2026-09-24T09:30' },
-  { id: 'r5', projectName: '1310029 Beschilderung B15', orgId: 'schlienz-zuerich', createdAt: '2026-09-21T15:45' },
-  { id: 'r6', projectName: '10342 Winden', orgId: 'schlienz', createdAt: '2026-09-19T08:00' },
-  { id: 'r7', projectName: 'Messestand Wien Prater', orgId: 'schlienz-st-gallen', createdAt: '2026-09-18T12:20' },
-  { id: 'r8', projectName: 'Solarpark Wels Ost', orgId: 'schlienz-ost', createdAt: '2026-09-15T10:05' },
-  { id: 'r9', projectName: 'BA Living Circles', orgId: 'schlienz', createdAt: '2026-09-12T07:40' },
-  { id: 'r10', projectName: 'DE-26 Hörnerbahn Raupenabspannung', orgId: 'schlienz-zuerich', createdAt: '2026-09-09T17:55' },
+  { id: 'r1', deploymentName: 'Infusionspumpen-Rollout Station 4B', careProviderId: 'careops-basel', createdAt: '2026-10-01T06:04' },
+  { id: 'r2', deploymentName: 'Patientenmonitore Intensivstation', careProviderId: 'careops-zuerich', createdAt: '2026-10-01T02:04' },
+  { id: 'r3', deploymentName: '1010901 Ultraschallgeräte Ambulanz', careProviderId: 'careops-medtech-service', createdAt: '2026-09-27T13:10' },
+  { id: 'r4', deploymentName: '1310007 Spritzenpumpen Pädiatrie', careProviderId: 'careops-basel', createdAt: '2026-09-24T09:30' },
+  { id: 'r5', deploymentName: '1310029 Pulsoximeter Stationen', careProviderId: 'careops-zuerich', createdAt: '2026-09-21T15:45' },
+  { id: 'r6', deploymentName: '10342 Defibrillatoren Hauptgebäude', careProviderId: 'careops-clinic-central', createdAt: '2026-09-19T08:00' },
+  { id: 'r7', deploymentName: 'Mobile EKG-Wagen Geriatrie', careProviderId: 'careops-st-gallen', createdAt: '2026-09-18T12:20' },
+  { id: 'r8', deploymentName: 'Beatmungsgeräte Notaufnahme', careProviderId: 'careops-ost', createdAt: '2026-09-15T10:05' },
+  { id: 'r9', deploymentName: 'OP-Bildgebung Zentral-OP', careProviderId: 'careops-clinic-central', createdAt: '2026-09-12T07:40' },
+  { id: 'r10', deploymentName: 'Patientenmonitore Intensivstation', careProviderId: 'careops-zuerich', createdAt: '2026-09-09T17:55' },
 ]
 
-export const statusLabels: Record<ProjectStatus, string> = {
+export const statusLabels: Record<DeploymentStatus, string> = {
   created: 'Erstellt',
-  datasets: 'Daten erhalten',
+  usageRecords: 'Daten erhalten',
   report: 'Bericht fertig',
   completed: 'Erledigt',
 }
 
-export function getOrgName(orgId: string) {
-  return organizations.find((org) => org.id === orgId)?.name ?? 'Unknown'
+export const statusLabelsEn: Record<DeploymentStatus, string> = {
+  created: 'Created',
+  usageRecords: 'Data received',
+  report: 'Report ready',
+  completed: 'Completed',
+}
+
+export function getCareProviderName(careProviderId: string) {
+  return careProviders.find((careProvider) => careProvider.id === careProviderId)?.name ?? 'Unknown'
 }
 
 export function isWithinLastMonth(iso: string) {
