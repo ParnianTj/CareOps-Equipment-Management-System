@@ -99,6 +99,14 @@ const filterOperators: { value: FilterOperator; label: string }[] = [
   { value: 'ends-with', label: 'ends with' },
 ]
 
+const ownerExamples = [
+  'Alois Huber',
+  'Richard Otten, Caleb Alaimo, Evan Blackwell',
+  'Martin Fankhauser, Dominik Züger, Simon Liniger',
+  'Andreas Englmeier',
+  'Krinner Accounting',
+]
+
 function getOrganizationField(org: Organization, column: FilterColumn, ownerExamples: string[]) {
   if (column === 'Firmenname') return org.name
   if (column === 'Account Besitzers') {
@@ -172,25 +180,17 @@ export function OrganizationTree({
   const [dialog, setDialog] = useState<OrganizationDialog>(null)
   const [organizationForm, setOrganizationForm] = useState<OrganizationForm>(initialOrganizationForm)
   const [ownersDraft, setOwnersDraft] = useState('')
-  const [ownerOptions, setOwnerOptions] = useState<string[]>([])
+  const [addedOwners, setAddedOwners] = useState<string[]>([])
   const [newOwnerDraft, setNewOwnerDraft] = useState('')
   const [showAddOwner, setShowAddOwner] = useState(false)
   const [showOpeningDays, setShowOpeningDays] = useState(false)
   const [formError, setFormError] = useState('')
-  const ownerExamples = [
-    'Alois Huber',
-    'Richard Otten, Caleb Alaimo, Evan Blackwell',
-    'Martin Fankhauser, Dominik Züger, Simon Liniger',
-    'Andreas Englmeier',
-    'Krinner Accounting',
-  ]
-
-  useEffect(() => {
+  const ownerOptions = useMemo(() => {
     const savedOwners = managedOrganizations.flatMap((org) =>
       (org.accountOwners ?? '').split(',').map((owner) => owner.trim()).filter(Boolean),
     )
-    setOwnerOptions([...new Set([...ownerExamples, ...savedOwners])])
-  }, [managedOrganizations])
+    return [...new Set([...ownerExamples, ...savedOwners, ...addedOwners])]
+  }, [managedOrganizations, addedOwners])
 
   useEffect(() => {
     try {
@@ -206,6 +206,8 @@ export function OrganizationTree({
         )) {
           throw new Error('Saved organization data has an invalid shape.')
         }
+        // localStorage only exists in the browser, so saved data can only be loaded after hydration
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setManagedOrganizations(parsed as Organization[])
       }
     } catch (error) {
@@ -313,7 +315,7 @@ export function OrganizationTree({
         return
       }
       const descendants = new Set<string>()
-      let pending = [editedId]
+      const pending = [editedId]
       while (pending.length) {
         const parentId = pending.pop()!
         const children = managedOrganizations.filter((org) => org.parentId === parentId)
@@ -384,7 +386,7 @@ export function OrganizationTree({
       setFormError('Bitte einen Benutzernamen eingeben.')
       return
     }
-    setOwnerOptions((current) => current.includes(owner) ? current : [...current, owner])
+    setAddedOwners((current) => current.includes(owner) ? current : [...current, owner])
     setOrganizationForm((current) => ({
       ...current,
       accountOwners: current.accountOwners.includes(owner)
@@ -423,29 +425,6 @@ export function OrganizationTree({
     setManagedOrganizations((current) => current.filter((item) => !deletedIds.has(item.id)))
   }
 
-  function exportOrganizations() {
-    const headers = ['Firmenname', 'Account Besitzers', 'Has Store', 'Plan', 'Status', 'Übergeordnet']
-    const csvRows = rows.map(({ org }) => [
-      org.name,
-      getOrganizationField(org, 'Account Besitzers', ownerExamples),
-      getOrganizationField(org, 'Has Store', ownerExamples),
-      getOrganizationField(org, 'Plan', ownerExamples),
-      org.isArchived ? 'Archiviert' : org.isActive ? 'Aktiv' : 'Inaktiv',
-      managedOrganizations.find((item) => item.id === org.parentId)?.name ?? '',
-    ])
-    const csv = [headers, ...csvRows]
-      .map((row) => row.map((value) => `"${value.replaceAll('"', '""')}"`).join(','))
-      .join('\r\n')
-    const url = URL.createObjectURL(new Blob(['\uFEFF', csv], { type: 'text/csv;charset=utf-8' }))
-    const link = document.createElement('a')
-    link.href = url
-    link.download = 'organisationen.csv'
-    document.body.appendChild(link)
-    link.click()
-    link.remove()
-    window.setTimeout(() => URL.revokeObjectURL(url), 0)
-  }
-
   const rows = useMemo(() => {
     const query = search.trim().toLocaleLowerCase()
     const matchingIds = new Set(
@@ -481,6 +460,29 @@ export function OrganizationTree({
       return shouldShowChildren
     })
   }, [managedOrganizations, search, isSchlienzExpanded, filterColumn, filterOperator, filterValue, showArchived])
+
+  function exportOrganizations() {
+    const headers = ['Firmenname', 'Account Besitzers', 'Has Store', 'Plan', 'Status', 'Übergeordnet']
+    const csvRows = rows.map(({ org }) => [
+      org.name,
+      getOrganizationField(org, 'Account Besitzers', ownerExamples),
+      getOrganizationField(org, 'Has Store', ownerExamples),
+      getOrganizationField(org, 'Plan', ownerExamples),
+      org.isArchived ? 'Archiviert' : org.isActive ? 'Aktiv' : 'Inaktiv',
+      managedOrganizations.find((item) => item.id === org.parentId)?.name ?? '',
+    ])
+    const csv = [headers, ...csvRows]
+      .map((row) => row.map((value) => `"${value.replaceAll('"', '""')}"`).join(','))
+      .join('\r\n')
+    const url = URL.createObjectURL(new Blob(['\uFEFF', csv], { type: 'text/csv;charset=utf-8' }))
+    const link = document.createElement('a')
+    link.href = url
+    link.download = 'organisationen.csv'
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    window.setTimeout(() => URL.revokeObjectURL(url), 0)
+  }
 
   return (
     <Panel title="Organisationen" description="Organisationen, Zuständigkeiten und Mitglieder im Überblick">

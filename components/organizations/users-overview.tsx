@@ -130,6 +130,8 @@ export function UsersOverview() {
         if (window.localStorage.getItem(screenshotUsersMigrationKey) !== 'true') {
           const userCreatedOutsideScreenshot = savedUsers.filter((user) => !user.id.startsWith('screenshot-user-'))
           window.localStorage.setItem(screenshotUsersMigrationKey, 'true')
+          // localStorage only exists in the browser, so saved data can only be loaded after hydration
+          // eslint-disable-next-line react-hooks/set-state-in-effect
           setUsers([...userCreatedOutsideScreenshot, ...screenshotUsers])
         } else {
           const savedUserIds = new Set(savedUsers.map((user) => user.id))
@@ -154,6 +156,8 @@ export function UsersOverview() {
       window.localStorage.setItem(storageKey, JSON.stringify(users))
     } catch (saveError) {
       console.error('Could not save user changes.', saveError)
+      // reports a failed write to localStorage (an external system), which is only known inside this effect
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setError('Änderungen konnten nicht im Browser gespeichert werden.')
     }
   }, [users, storageLoaded])

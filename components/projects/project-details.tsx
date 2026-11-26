@@ -122,7 +122,7 @@ function ReportDialog({
       .map((position, seriesIndex) => {
         const random = createProjectRandom(`${project.id}-${position.id}-graph`)
         const maxDepth = options.showPileDepth ? 180 : 120
-        const maxTorque = 1200 + random() * 500
+        random() // advance the seeded RNG so the generated graph shapes stay the same
         const points = Array.from({ length: 32 }, (_, index) => {
           const progress = index / 31
           const torque = 45 + progress * 690 + Math.sin(progress * Math.PI * 6 + random()) * 12
