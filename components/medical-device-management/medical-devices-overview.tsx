@@ -17,8 +17,6 @@ import { useLanguage } from '@/components/app-shell'
 type MedicalDevice = {
   number: number
   name: string
-  carrier: string
-  deviceTypeConfiguration: string
   monitoring: string
   sensors: string
   company: string
@@ -27,18 +25,18 @@ type MedicalDevice = {
 }
 
 const initialMedicalDevices: MedicalDevice[] = [
-  { number: 16, name: 'InfuMed 300', carrier: 'Default', deviceTypeConfiguration: 'Default', monitoring: 'CareOps ...', sensors: 'Default', company: 'Klinik Kleinfeld', outOfService: false, active: false },
-  { number: 17, name: 'InfuMed 300', carrier: 'Default', deviceTypeConfiguration: 'Default', monitoring: 'CareOps ...', sensors: 'Default', company: 'Reha-Klinik Waldesruh', outOfService: false, active: false },
-  { number: 18, name: 'VitaScan 500', carrier: 'Default', deviceTypeConfiguration: 'Default', monitoring: 'CareOps ...', sensors: '', company: 'Dialysezentrum Ostring', outOfService: false, active: false },
-  { number: 22, name: 'CardioLink D30-048', carrier: 'Default', deviceTypeConfiguration: 'Default', monitoring: 'CareOps ...', sensors: 'Default', company: 'Dialysezentrum Ostring', outOfService: false, active: false },
-  { number: 24, name: 'CardioLink D30-046', carrier: 'Default', deviceTypeConfiguration: 'Default', monitoring: 'N/A', sensors: 'Default', company: 'CareOps Klinik Zürich', outOfService: false, active: false },
-  { number: 29, name: 'CardioLink D30-041', carrier: 'Default', deviceTypeConfiguration: 'Default', monitoring: 'CareOps ...', sensors: 'Default', company: 'Klinik Kleinfeld', outOfService: false, active: false },
-  { number: 33, name: 'CardioLink D30-037', carrier: 'Default', deviceTypeConfiguration: 'Default', monitoring: 'CareOps ...', sensors: 'Default', company: 'Klinik Kleinfeld', outOfService: false, active: false },
-  { number: 37, name: 'CardioLink D30-033', carrier: 'Default', deviceTypeConfiguration: 'Default', monitoring: 'CareOps ...', sensors: 'Default', company: 'Klinik Kleinfeld', outOfService: false, active: false },
-  { number: 39, name: 'CardioLink D30-031', carrier: 'Default', deviceTypeConfiguration: 'Default', monitoring: 'CareOps ...', sensors: 'Default', company: 'Rehazentrum Lindau', outOfService: false, active: false },
-  { number: 40, name: 'CardioLink D30-030', carrier: 'Default', deviceTypeConfiguration: 'Default', monitoring: 'CareOps ...', sensors: 'Default', company: 'Klinik Kleinfeld', outOfService: false, active: false },
-  { number: 58, name: 'CardioLink D30-012', carrier: 'Default', deviceTypeConfiguration: 'Default', monitoring: 'CareOps ...', sensors: 'Default', company: 'Dialysezentrum Ostring', outOfService: false, active: false },
-  { number: 61, name: 'CardioLink D30-009', carrier: 'Default', deviceTypeConfiguration: 'Default', monitoring: 'CareOps ...', sensors: 'Default', company: 'Dialysezentrum Ostring', outOfService: false, active: false },
+  { number: 16, name: 'InfuMed 300', monitoring: 'CareOps ...', sensors: 'Default', company: 'Klinik Kleinfeld', outOfService: false, active: false },
+  { number: 17, name: 'InfuMed 300', monitoring: 'CareOps ...', sensors: 'Default', company: 'Reha-Klinik Waldesruh', outOfService: false, active: false },
+  { number: 18, name: 'VitaScan 500', monitoring: 'CareOps ...', sensors: '', company: 'Dialysezentrum Ostring', outOfService: false, active: false },
+  { number: 22, name: 'CardioLink D30-048', monitoring: 'CareOps ...', sensors: 'Default', company: 'Dialysezentrum Ostring', outOfService: false, active: false },
+  { number: 24, name: 'CardioLink D30-046', monitoring: 'N/A', sensors: 'Default', company: 'CareOps Klinik Zürich', outOfService: false, active: false },
+  { number: 29, name: 'CardioLink D30-041', monitoring: 'CareOps ...', sensors: 'Default', company: 'Klinik Kleinfeld', outOfService: false, active: false },
+  { number: 33, name: 'CardioLink D30-037', monitoring: 'CareOps ...', sensors: 'Default', company: 'Klinik Kleinfeld', outOfService: false, active: false },
+  { number: 37, name: 'CardioLink D30-033', monitoring: 'CareOps ...', sensors: 'Default', company: 'Klinik Kleinfeld', outOfService: false, active: false },
+  { number: 39, name: 'CardioLink D30-031', monitoring: 'CareOps ...', sensors: 'Default', company: 'Rehazentrum Lindau', outOfService: false, active: false },
+  { number: 40, name: 'CardioLink D30-030', monitoring: 'CareOps ...', sensors: 'Default', company: 'Klinik Kleinfeld', outOfService: false, active: false },
+  { number: 58, name: 'CardioLink D30-012', monitoring: 'CareOps ...', sensors: 'Default', company: 'Dialysezentrum Ostring', outOfService: false, active: false },
+  { number: 61, name: 'CardioLink D30-009', monitoring: 'CareOps ...', sensors: 'Default', company: 'Dialysezentrum Ostring', outOfService: false, active: false },
 ]
 
 const storageKey = 'careops-medical-devices'
@@ -48,8 +46,6 @@ function isMedicalDevice(value: unknown): value is MedicalDevice {
   const item = value as Record<string, unknown>
   return typeof item.number === 'number'
     && typeof item.name === 'string'
-    && typeof item.carrier === 'string'
-    && typeof item.deviceTypeConfiguration === 'string'
     && typeof item.monitoring === 'string'
     && typeof item.sensors === 'string'
     && typeof item.company === 'string'
@@ -102,8 +98,6 @@ export function MedicalDevicesOverview() {
         export: 'Export',
         createMedicalDevice: 'Create medical device',
         search: 'Search medical devices and companies',
-        carrier: 'Carrier',
-        deviceTypeConfiguration: 'Device type configuration',
         monitoring: 'Monitoring device',
         sensors: 'Sensors',
         company: 'Company name',
@@ -123,8 +117,6 @@ export function MedicalDevicesOverview() {
         export: 'Exportieren',
         createMedicalDevice: 'Medizingerät erstellen',
         search: 'Medizingeräte und Firmen suchen',
-        carrier: 'Träger',
-        deviceTypeConfiguration: 'Gerätetypkonfiguration',
         monitoring: 'Monitoring-Gerät',
         sensors: 'Sensoren',
         company: 'Firmenname',
@@ -146,8 +138,6 @@ export function MedicalDevicesOverview() {
     return medicalDevices.filter((medicalDevice) =>
       [
         medicalDevice.name,
-        medicalDevice.carrier === 'Default' && !isEnglish ? 'Standard' : medicalDevice.carrier,
-        medicalDevice.deviceTypeConfiguration === 'Default' && !isEnglish ? 'Standard' : medicalDevice.deviceTypeConfiguration,
         medicalDevice.monitoring,
         medicalDevice.sensors === 'Default' && !isEnglish ? 'Standard' : medicalDevice.sensors,
         medicalDevice.company,
@@ -159,8 +149,6 @@ export function MedicalDevicesOverview() {
   function exportMedicalDevices() {
     const headers = [
       'Name',
-      labels.carrier,
-      labels.deviceTypeConfiguration,
       labels.monitoring,
       labels.sensors,
       labels.company,
@@ -169,8 +157,6 @@ export function MedicalDevicesOverview() {
     ]
     const rows = visibleMedicalDevices.map((medicalDevice) => [
       medicalDevice.name,
-      medicalDevice.carrier === 'Default' && !isEnglish ? 'Standard' : medicalDevice.carrier,
-      medicalDevice.deviceTypeConfiguration === 'Default' && !isEnglish ? 'Standard' : medicalDevice.deviceTypeConfiguration,
       medicalDevice.monitoring,
       medicalDevice.sensors === 'Default' && !isEnglish ? 'Standard' : medicalDevice.sensors,
       medicalDevice.company,
@@ -201,8 +187,6 @@ export function MedicalDevicesOverview() {
     setMedicalDevices((current) => [...current, {
       number: Math.max(0, ...current.map((medicalDevice) => medicalDevice.number)) + 1,
       name: trimmedName,
-      carrier: 'Default',
-      deviceTypeConfiguration: 'Default',
       monitoring: 'N/A',
       sensors: 'Default',
       company: trimmedCompany,
@@ -259,22 +243,18 @@ export function MedicalDevicesOverview() {
         )}
 
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[1120px] table-fixed text-xs sm:text-sm">
+          <table className="w-full min-w-[880px] table-fixed text-xs sm:text-sm">
             <colgroup>
-              <col className="w-[10%]" />
-              <col className="w-[10%]" />
-              <col className="w-[12%]" />
-              <col className="w-[10%]" />
-              <col className="w-[9%]" />
-              <col className="w-[20%]" />
               <col className="w-[14%]" />
-              <col className="w-[15%]" />
+              <col className="w-[14%]" />
+              <col className="w-[12%]" />
+              <col className="w-[26%]" />
+              <col className="w-[17%]" />
+              <col className="w-[17%]" />
             </colgroup>
             <thead>
               <tr className="border-y border-border bg-muted/60 text-left text-xs font-semibold text-foreground">
                 <th className="px-3 py-3">Name</th>
-                <th className="truncate px-3 py-3" title={labels.carrier}>{labels.carrier}</th>
-                <th className="truncate px-3 py-3" title={labels.deviceTypeConfiguration}>{labels.deviceTypeConfiguration}</th>
                 <th className="truncate px-3 py-3" title={labels.monitoring}>{labels.monitoring}</th>
                 <th className="px-3 py-3">{labels.sensors}</th>
                 <th className="px-3 py-3">{labels.company}</th>
@@ -286,8 +266,6 @@ export function MedicalDevicesOverview() {
               {visibleMedicalDevices.map((medicalDevice, index) => (
                 <tr key={medicalDevice.number} className={`border-b border-border last:border-0 hover:bg-muted/50 ${index % 2 ? 'bg-muted/20' : ''}`}>
                   <td className="truncate px-3 py-4" title={medicalDevice.name}>{medicalDevice.name}</td>
-                  <td className="truncate px-3 py-4" title={medicalDevice.carrier === 'Default' && !isEnglish ? 'Standard' : medicalDevice.carrier}>{medicalDevice.carrier === 'Default' && !isEnglish ? 'Standard' : medicalDevice.carrier}</td>
-                  <td className="truncate px-3 py-4" title={medicalDevice.deviceTypeConfiguration === 'Default' && !isEnglish ? 'Standard' : medicalDevice.deviceTypeConfiguration}>{medicalDevice.deviceTypeConfiguration === 'Default' && !isEnglish ? 'Standard' : medicalDevice.deviceTypeConfiguration}</td>
                   <td className="truncate px-3 py-4" title={medicalDevice.monitoring}>{medicalDevice.monitoring}</td>
                   <td className="truncate px-3 py-4" title={medicalDevice.sensors === 'Default' && !isEnglish ? 'Standard' : medicalDevice.sensors}>{medicalDevice.sensors === 'Default' && !isEnglish ? 'Standard' : medicalDevice.sensors}</td>
                   <td className="truncate px-3 py-4" title={medicalDevice.company}>{medicalDevice.company}</td>
@@ -317,7 +295,7 @@ export function MedicalDevicesOverview() {
               ))}
               {visibleMedicalDevices.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="px-4 py-10 text-center text-sm text-muted-foreground">{labels.noMedicalDevicesFound}</td>
+                  <td colSpan={6} className="px-4 py-10 text-center text-sm text-muted-foreground">{labels.noMedicalDevicesFound}</td>
                 </tr>
               )}
             </tbody>
