@@ -3,7 +3,8 @@ name: CI/CD
 # Continuous Integration runs on every push and every pull request.
 # Continuous Delivery (the docker-publish job) only runs after CI has
 # passed AND the change has landed on main, so a broken build can never
-# reach the registry.
+# reach the registry. Continuous Deployment (the deploy job) then rolls
+# that exact image out to Render and smoke-tests the live site.
 on:
   push:
     branches: [main]
@@ -25,15 +26,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       # Installs the pnpm version pinned in package.json ("packageManager").
       # Must run before setup-node so that its pnpm cache can find pnpm.
       - name: Set up pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
 
       - name: Set up Node ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
@@ -68,10 +69,10 @@ jobs:
       packages: write
     steps:
       - name: Check out source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
@@ -79,7 +80,7 @@ jobs:
 
       - name: Extract image metadata (tags, labels)
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
@@ -87,10 +88,10 @@ jobs:
             type=raw,value=latest
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Build and push image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           push: true
@@ -100,30 +101,115 @@ jobs:
           cache-to: type=gha,mode=max
 
   # ---------------------------------------------------------------------
+  # Continuous Deployment: tell Render to run the exact image that was
+  # just tested and published (sha-<short sha>, never "latest"), then
+  # smoke-test the live site.
+  # ---------------------------------------------------------------------
+  deploy:
+    name: Deploy to Render
+    needs: docker-publish
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: ${{ vars.PRODUCTION_URL }}
+    # Never run two deploys at once; a queued deploy waits instead of
+    # racing (and possibly rolling back) the one in progress.
+    concurrency:
+      group: production
+      cancel-in-progress: false
+    permissions: {}
+    steps:
+      - name: Trigger Render deploy hook
+        env:
+          DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          set -euo pipefail
+          if [ -z "${DEPLOY_HOOK_URL:-}" ]; then
+            echo "::error::Secret RENDER_DEPLOY_HOOK_URL is not set."
+            exit 1
+          fi
+
+          # Same tag docker/metadata-action produces for type=sha,format=short.
+          # GHCR requires lowercase repository names.
+          IMAGE="${REGISTRY}/${IMAGE_NAME,,}:sha-${GITHUB_SHA::7}"
+          ENCODED_IMAGE=$(jq -rn --arg v "$IMAGE" '$v|@uri')
+          echo "Deploying image: $IMAGE"
+
+          # The hook URL is never echoed; GitHub also masks it as a secret.
+          STATUS=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 60 \
+            -X POST "${DEPLOY_HOOK_URL}&imgURL=${ENCODED_IMAGE}") || STATUS="000"
+          echo "Render deploy hook responded with HTTP $STATUS"
+          if [ "$STATUS" != "200" ] && [ "$STATUS" != "202" ]; then
+            echo "::error::Render deploy hook returned HTTP $STATUS (expected 200 or 202)."
+            exit 1
+          fi
+
+      - name: Smoke test production
+        env:
+          PRODUCTION_URL: ${{ vars.PRODUCTION_URL }}
+        run: |
+          set -uo pipefail
+          if [ -z "${PRODUCTION_URL:-}" ]; then
+            echo "::error::Variable PRODUCTION_URL is not set."
+            exit 1
+          fi
+
+          # Free Render instances cold-start slowly and the new deploy needs
+          # time to roll out, so retry for up to ~5 minutes (30 x 10s).
+          BODY=$(mktemp)
+          for attempt in $(seq 1 30); do
+            STATUS=$(curl -sS -L -o "$BODY" -w '%{http_code}' --max-time 30 "$PRODUCTION_URL") || STATUS="000"
+            echo "Attempt $attempt/30: HTTP $STATUS"
+            if [ "$STATUS" = "200" ]; then
+              if grep -q "CareOps" "$BODY"; then
+                echo "Smoke test passed: HTTP 200 and page contains \"CareOps\"."
+                exit 0
+              fi
+              echo "::error::HTTP 200 but the page does not contain \"CareOps\"."
+              exit 1
+            fi
+            sleep 10
+          done
+          echo "::error::$PRODUCTION_URL did not return HTTP 200 within ~5 minutes (last: HTTP $STATUS)."
+          exit 1
+
+  # ---------------------------------------------------------------------
   # Feedback loop: report the pipeline outcome back to the team/commit,
   # whether the preceding jobs succeeded or failed.
   # ---------------------------------------------------------------------
   notify:
     name: Report pipeline result
-    needs: [ci, docker-publish]
+    needs: [ci, docker-publish, deploy]
     if: always()
     runs-on: ubuntu-latest
+    permissions:
+      statuses: write
     steps:
       - name: Post status to the commit
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const ci = '${{ needs.ci.result }}';
             const publish = '${{ needs.docker-publish.result }}';
-            const state = ci === 'success' ? 'success' : 'failure';
-            const description =
-              ci !== 'success'
-                ? 'CI failed: lint/typecheck/test/build did not pass.'
-                : publish === 'skipped'
-                  ? 'CI passed (image publish skipped for this branch/PR).'
-                  : publish === 'success'
-                    ? 'CI passed and image published to GHCR.'
-                    : 'CI passed but the Docker publish step failed.';
+            const deploy = '${{ needs.deploy.result }}';
+
+            let state = 'failure';
+            let description;
+            if (ci !== 'success') {
+              description = `CI failed (${ci}): lint/typecheck/test/build did not pass.`;
+            } else if (publish === 'skipped') {
+              state = 'success';
+              description = 'CI passed (publish and deploy skipped for this branch/PR).';
+            } else if (publish !== 'success') {
+              description = `CI passed but the Docker publish stage failed (${publish}).`;
+            } else if (deploy !== 'success') {
+              description = `Image published but the deploy stage failed (${deploy}): deploy hook or smoke test.`;
+            } else {
+              state = 'success';
+              description = 'CI passed, image published and deployed to production';
+            }
+
             await github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
