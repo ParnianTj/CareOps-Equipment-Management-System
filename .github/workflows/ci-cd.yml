@@ -97,6 +97,7 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: GIT_SHA=${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -148,30 +149,53 @@ jobs:
       - name: Smoke test production
         env:
           PRODUCTION_URL: ${{ vars.PRODUCTION_URL }}
+          EXPECTED_SHA: ${{ github.sha }}
         run: |
           set -uo pipefail
           if [ -z "${PRODUCTION_URL:-}" ]; then
             echo "::error::Variable PRODUCTION_URL is not set."
             exit 1
           fi
+          BASE_URL="${PRODUCTION_URL%/}"
 
-          # Free Render instances cold-start slowly and the new deploy needs
-          # time to roll out, so retry for up to ~5 minutes (30 x 10s).
+          # Render keeps serving the previous deploy until the new one is up,
+          # and free instances cold-start slowly. So poll /api/version until it
+          # reports the commit we just tested, then check the page itself.
+          # One shared budget of ~5 minutes covers both checks.
+          BUDGET=300
+          START=$SECONDS
           BODY=$(mktemp)
-          for attempt in $(seq 1 30); do
-            STATUS=$(curl -sS -L -o "$BODY" -w '%{http_code}' --max-time 30 "$PRODUCTION_URL") || STATUS="000"
-            echo "Attempt $attempt/30: HTTP $STATUS"
-            if [ "$STATUS" = "200" ]; then
-              if grep -q "CareOps" "$BODY"; then
-                echo "Smoke test passed: HTTP 200 and page contains \"CareOps\"."
-                exit 0
+          VERSION=$(mktemp)
+          attempt=0
+          ACTUAL_SHA="(none)"
+          PAGE_STATUS="(not checked)"
+          while [ $((SECONDS - START)) -lt "$BUDGET" ]; do
+            attempt=$((attempt + 1))
+            V_STATUS=$(curl -sS -L -o "$VERSION" -w '%{http_code}' --max-time 30 \
+              -H 'Cache-Control: no-cache' "$BASE_URL/api/version") || V_STATUS="000"
+            ACTUAL_SHA=$(jq -r '.sha // "(missing)"' "$VERSION" 2>/dev/null) || ACTUAL_SHA="(not JSON, HTTP $V_STATUS)"
+            echo "Attempt $attempt ($((SECONDS - START))s): /api/version HTTP $V_STATUS | expected sha=$EXPECTED_SHA | actual sha=$ACTUAL_SHA"
+
+            if [ "$V_STATUS" = "200" ] && [ "$ACTUAL_SHA" = "$EXPECTED_SHA" ]; then
+              PAGE_STATUS=$(curl -sS -L -o "$BODY" -w '%{http_code}' --max-time 30 "$BASE_URL") || PAGE_STATUS="000"
+              echo "  page $BASE_URL: HTTP $PAGE_STATUS"
+              if [ "$PAGE_STATUS" = "200" ]; then
+                if grep -q "CareOps" "$BODY"; then
+                  echo "Smoke test passed after $((SECONDS - START))s: commit $EXPECTED_SHA is live, HTTP 200 and page contains \"CareOps\"."
+                  exit 0
+                fi
+                echo "::error::Commit $EXPECTED_SHA is live and the page returned HTTP 200, but it does not contain \"CareOps\"."
+                exit 1
               fi
-              echo "::error::HTTP 200 but the page does not contain \"CareOps\"."
-              exit 1
             fi
             sleep 10
           done
-          echo "::error::$PRODUCTION_URL did not return HTTP 200 within ~5 minutes (last: HTTP $STATUS)."
+
+          if [ "$ACTUAL_SHA" != "$EXPECTED_SHA" ]; then
+            echo "::error::Deployed version never matched within ${BUDGET}s: expected sha $EXPECTED_SHA, production reports $ACTUAL_SHA. The new deploy did not go live (check the Render dashboard)."
+          else
+            echo "::error::Commit $EXPECTED_SHA is live, but $BASE_URL did not return HTTP 200 within ${BUDGET}s (last: HTTP $PAGE_STATUS)."
+          fi
           exit 1
 
   # ---------------------------------------------------------------------

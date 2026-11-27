@@ -17,6 +17,8 @@ RUN pnpm install --frozen-lockfile
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+# Commit the image is built from (passed by CI); exposed via /api/version.
+ARG GIT_SHA=unknown
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN pnpm build
 
@@ -42,6 +44,10 @@ USER nextjs
 EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
+
+# Declared last so a new commit SHA doesn't invalidate the layers above.
+ARG GIT_SHA=unknown
+ENV GIT_SHA=${GIT_SHA}
 
 # Healthy once the server answers on the dashboard page (busybox wget ships with alpine)
 HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
