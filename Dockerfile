@@ -1,16 +1,20 @@
 # syntax=docker/dockerfile:1
 
-# ---- 1. Dependencies -------------------------------------------------------
-FROM node:26-alpine AS deps
+# ---- 0. Base with pnpm --------------------------------------------------------
+# Node 26 no longer ships corepack, so pnpm is installed once here and shared by
+# the deps and build stages. Keep PNPM_VERSION in sync with "packageManager".
+FROM node:26-alpine AS base
+ARG PNPM_VERSION=12.3.4
 WORKDIR /app
-RUN npm install -g pnpm@12.3.4
+RUN npm install -g pnpm@${PNPM_VERSION}
+
+# ---- 1. Dependencies -------------------------------------------------------
+FROM base AS deps
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
 
 # ---- 2. Build ---------------------------------------------------------------
-FROM node:26-alpine AS builder
-WORKDIR /app
-RUN npm install -g pnpm@12.3.4
+FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
